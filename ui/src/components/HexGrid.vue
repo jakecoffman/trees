@@ -1,6 +1,5 @@
 <template>
-  <svg viewBox="-626.2177826491071 -626.2177826491071 1252.4355652982142 1252.4355652982142"
-       style="max-width: 90vw; max-height: 90vh;">
+  <svg class="board" viewBox="-600 -550 1210 1210">
     <g transform="rotate(-30)" fill="white" stroke="black">
       <g class="grid" id="grid">
         <g v-for="(cell, index) of grid" :key="index" :transform="`translate(${cell.tX},${cell.tY})`">
@@ -284,3 +283,9 @@ const grid = [
   }
 ]
 </script>
+<style scoped>
+.board {
+  max-width: 100vw;
+  max-height: 90vh;
+}
+</style>
