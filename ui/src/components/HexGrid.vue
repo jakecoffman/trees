@@ -1,13 +1,16 @@
 <template>
-  <svg class="board" viewBox="-600 -550 1210 1100">
-    <g transform="rotate(-30)" fill="white" stroke="black">
-      <g class="grid" id="grid">
-        <g v-for="(cell, index) of grid" :key="index" :transform="`translate(${cell.tX},${cell.tY})`">
-          <hex-cell :x="cell.x" :y="cell.y" :z="cell.z" :index="index"/>
+  <section>
+    <svg class="board" viewBox="-600 -550 1210 1100">
+      <g transform="rotate(-30)" fill="white" stroke="black">
+        <g class="grid" id="grid">
+          <g v-for="(cell, index) of grid" :key="index" :transform="`translate(${cell.tX},${cell.tY})`">
+            <hex-cell :x="cell.x" :y="cell.y" :z="cell.z" :index="index"/>
+          </g>
         </g>
       </g>
-    </g>
-  </svg>
+    </svg>
+    <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+  </section>
 </template>
 <script>
 import HexCell from "./HexCell.vue";
