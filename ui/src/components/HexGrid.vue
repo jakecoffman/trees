@@ -1,5 +1,5 @@
 <template>
-  <svg class="board" viewBox="-600 -550 1210 1210">
+  <svg class="board" viewBox="-600 -550 1210 1100">
     <g transform="rotate(-30)" fill="white" stroke="black">
       <g class="grid" id="grid">
         <g v-for="(cell, index) of grid" :key="index" :transform="`translate(${cell.tX},${cell.tY})`">
