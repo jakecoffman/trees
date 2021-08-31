@@ -20,11 +20,12 @@ func Handle(ws *websocket.Conn, r *http.Request) {
 	// extract cookie or create a new playerId
 	{
 		cookie, err := r.Cookie("player")
-		log.Println(cookie, err, r.Cookies())
-		if err == http.ErrNoCookie {
+		if err != nil {
+			log.Println("Player failed to connect:", err.Error())
 			return
 		} else {
 			playerId = cookie.Value
+			log.Println("Reconnect", playerId)
 		}
 	}
 

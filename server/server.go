@@ -41,8 +41,8 @@ func main() {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		//w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
+		//w.Header().Set("Access-Control-Allow-Credentials", "true")
 		w.Write([]byte(`{"status": "ok"}`))
 	})
 	mux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
@@ -53,10 +53,9 @@ func main() {
 		}
 		defer ws.Close()
 
-		log.Println("OK!")
-
 		server.Handle(ws, r)
 	})
+	log.Println("Serving http://127.0.0.1:8080")
 	if err := http.ListenAndServe("127.0.0.1:8080", mux); err != nil {
 		log.Println(err)
 	}

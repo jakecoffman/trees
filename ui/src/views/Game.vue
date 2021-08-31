@@ -16,9 +16,18 @@ export default {
     }
   },
   async mounted() {
-    await fetch('http://127.0.0.1:8080/login', {credentials: 'include'})
+    try {
+      const r = await fetch('/api/login', {credentials: "include"})
+      if (!r.ok) {
+        return alert(await r.text())
+      }
+      await r.json()
+    } catch (e) {
+      console.error(e)
+      return
+    }
 
-    this.ws = new WebSocket('ws://127.0.0.1:8080/ws')
+    this.ws = new WebSocket(`ws://${location.host}/ws`)
     this.ws.onopen = this.wsOpen
     this.ws.onclose = this.wsClose
     this.ws.onerror = this.wsError
