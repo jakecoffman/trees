@@ -1,15 +1,14 @@
 <template>
   <g class="cell">
-    <text class="xyz">{{x}} {{y}} {{z}}</text>
-    <polygon points="100,0 50,-87 -50,-87 -100,-0 -50,87 50,87"></polygon>
-    <image
-        v-if="href"
+    <polygon points="100,0 50,-87 -50,-87 -100,-0 -50,87 50,87" :class="polyClass"></polygon>
+    <text class="xyz"></text>
+    <image v-if="href"
         transform="rotate(30)"
         :x="offsetX"
         :y="offsetY"
         :width="size"
         :height="size"
-        style="filter: sepia(100%) saturate(300%) brightness(70%) hue-rotate(180deg);"
+        :style="`filter: sepia(100%) saturate(300%) brightness(70%) ${tree.Owner ? 'hue-rotate(180deg)' : 'hue-rotate(0deg)'};`"
         :href="href" />
     <g v-if="debug">
       <text transform="rotate(-90) translate(60, 0) rotate(90) rotate(30) translate(0,10)" class="q-coord">
@@ -29,8 +28,21 @@
 </template>
 <script>
 export default {
-  props: ['x', 'y', 'z', 'index', 'debug', 'tree'],
+  props: ['x', 'y', 'z', 'index', 'debug', 'tree', 'cell'],
   computed: {
+    polyClass() {
+      switch (this.cell.Richness) {
+        case 0:
+          return 'richUnusable'
+        case 1:
+          return 'richLow'
+        case 2:
+          return 'richMed'
+        case 3:
+          return 'richHigh'
+      }
+      return ''
+    },
     href() {
       if (!this.tree) {
         return null
@@ -69,5 +81,18 @@ export default {
 <style scoped>
 .cell:hover {
   fill: #9b9bff;
+  z-index: 1000;
+}
+.richUnusable {
+  fill: gray;
+}
+.richLow {
+  fill: darkseagreen;
+}
+.richMed {
+  fill: lightgreen;
+}
+.richHigh {
+  fill: green;
 }
 </style>
