@@ -10,6 +10,6 @@ const (
 type Tree struct {
 	CellIndex int
 	Size      int
-	Player    int
+	Owner     int
 	IsDormant bool
 }

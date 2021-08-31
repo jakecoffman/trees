@@ -10,10 +10,11 @@ type State struct {
 	Nutrients int
 
 	// Trees: key is cell index
-	Trees map[int]Tree
+	Trees map[int]*Tree
 
-	Energy []int
-	Score  []int
+	Energy  []int
+	Score   []int
+	Shadows [6][4]uint64
 }
 
 func New() *State {
@@ -22,11 +23,12 @@ func New() *State {
 		Sun:       Sun{},
 		Day:       0,
 		Nutrients: 20,
-		Trees:     map[int]Tree{},
+		Trees:     map[int]*Tree{},
 		Energy:    []int{0, 0},
 		Score:     []int{0, 0},
 	}
 
+	// this stuff can probably go in NewBoard
 	for _, cell := range s.Board.Map {
 		s.Board.Cells = append(s.Board.Cells, cell)
 	}
@@ -38,6 +40,10 @@ func New() *State {
 		s.Board.Cells[cell.Index] = cell
 		s.Board.Map[coord] = cell
 	}
+
+	randomizeBoard(s)
+	initStartingTrees(s)
+	gatherSun(s)
 
 	return s
 }

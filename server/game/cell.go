@@ -12,9 +12,3 @@ type Cell struct {
 	Richness  int
 	Neighbors []int
 }
-
-func check(err error) {
-	if err != nil {
-		panic(err)
-	}
-}

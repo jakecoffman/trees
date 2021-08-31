@@ -5,18 +5,22 @@ import (
 )
 
 type Board struct {
-	Map map[Coord]Cell
-	// Coordinates are ordered by Cell Index
+	// Map looks up cell from the coord
+	Map map[Coord]*Cell
+	// Coords ordered by cell index
 	Coords []Coord
-	Index  int
-	Cells  []Cell
+	// Cells index ordered slice of cells
+	Cells []*Cell
+
+	// used during board generation
+	index int
 }
 
 const MapRingCount = 3
 
 func NewBoard() Board {
 	b := Board{
-		Map: map[Coord]Cell{},
+		Map: map[Coord]*Cell{},
 	}
 
 	center := Coord{}
@@ -41,7 +45,7 @@ func NewBoard() Board {
 
 	type Pair struct {
 		coord Coord
-		cell  Cell
+		cell  *Cell
 	}
 	var pairs []Pair
 	for coord, cell := range b.Map {
@@ -71,11 +75,11 @@ func (b *Board) GetNeighborIds(coord Coord) []int {
 }
 
 func (b *Board) AddCell(coord Coord, richness int) {
-	b.Map[coord] = Cell{
-		Index:    b.Index,
+	b.Map[coord] = &Cell{
+		Index:    b.index,
 		Richness: richness,
 	}
-	b.Index++
+	b.index++
 }
 
 func (b *Board) Edges() []Coord {
