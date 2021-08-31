@@ -1,10 +1,17 @@
 package server
 
 import (
-	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
+	"log"
 	"net/http"
 )
+
+type Message struct {
+	Kind  string
+	Value string       `json:",omitempty"`
+	Game  *GameWrapper `json:",omitempty"`
+	You   int          `json:",omitempty"`
+}
 
 func Handle(ws *websocket.Conn, r *http.Request) {
 	var playerId string
@@ -13,9 +20,9 @@ func Handle(ws *websocket.Conn, r *http.Request) {
 	// extract cookie or create a new playerId
 	{
 		cookie, err := r.Cookie("player")
+		log.Println(cookie, err, r.Cookies())
 		if err == http.ErrNoCookie {
-			playerId = uuid.New().String()
-			// TODO send this to the player
+			return
 		} else {
 			playerId = cookie.Value
 		}
@@ -63,11 +70,23 @@ func Handle(ws *websocket.Conn, r *http.Request) {
 		return
 	}
 
-	// send state to all players
+	sendAll(player.game.Players)
 
 	for {
 		if err := loop(player); err != nil {
 			break
+		}
+	}
+}
+
+func sendAll(to map[string]*Player) {
+	for _, p := range to {
+		msg := Message{
+			Kind: "game",
+			Game: p.game,
+		}
+		if err := p.ws.WriteJSON(msg); err != nil {
+			return
 		}
 	}
 }
