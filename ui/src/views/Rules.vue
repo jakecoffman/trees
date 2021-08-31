@@ -46,7 +46,7 @@
   </p>
 
   <p>
-    Once both players End, the Sun direction moves and trees gather Sun points.
+    Once both players End, the Sun direction moves and trees gather Energy.
   </p>
 
   <p>
@@ -57,13 +57,15 @@
 
   <h2>Costs</h2>
 
-  <p>The base cost to cast a seed is 0 Sun.</p>
+  <p>Actions cost ☀️ ⚡ Energy.</p>
+
+  <p>The base cost to cast a seed is 0.</p>
 
   <p>The base cost to grow a Seed is 1, a Sprout 3, and a Sapling 7.</p>
 
   <p>In addition to the base costs above, for each tree already at that size the cost increases by 1.</p>
 
-  <p>To sell a tree costs 4 Sun.</p>
+  <p>To sell a tree costs 4.</p>
 
   <h2>Scoring</h2>
 

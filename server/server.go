@@ -2,8 +2,14 @@ package main
 
 import (
 	"log"
+	"math/rand"
 	"net/http"
+	"time"
 )
+
+func init() {
+	rand.Seed(time.Now().Unix())
+}
 
 func main() {
 	mux := http.NewServeMux()
