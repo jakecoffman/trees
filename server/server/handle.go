@@ -35,19 +35,29 @@ func Handle(ws *websocket.Conn, r *http.Request) {
 	mutex.RUnlock()
 	if player == nil {
 		mutex.Lock()
-		players[playerId] = &Player{
+		player = &Player{
 			id: playerId,
 			ws: ws,
 		}
+		players[playerId] = player
 		mutex.Unlock()
+	} else {
+		player.ws = ws
 	}
+	defer func() {
+		mutex.Lock()
+		player.ws = nil
+		mutex.Unlock()
+	}()
 
 	// handle what the player is trying to do
+	log.Println("QUERY", r.URL.Query())
 	action := r.URL.Query().Get("action")
 	code := r.URL.Query().Get("code")
 
 	switch action {
 	case "new":
+		log.Println("Starting new game")
 		if player.game != nil {
 			player.game.Quit(player)
 			player.game = nil
@@ -68,9 +78,11 @@ func Handle(ws *websocket.Conn, r *http.Request) {
 		g.Join(player)
 		player.game = g
 	default:
+		log.Println("Invalid/missing action:", action)
 		return
 	}
 
+	log.Println("Sending")
 	sendAll(player.game.Players)
 
 	for {
@@ -87,6 +99,7 @@ func sendAll(to map[string]*Player) {
 			Game: p.game,
 		}
 		if err := p.ws.WriteJSON(msg); err != nil {
+			log.Println(err)
 			return
 		}
 	}

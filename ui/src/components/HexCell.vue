@@ -3,6 +3,7 @@
     <text class="xyz">{{x}} {{y}} {{z}}</text>
     <polygon points="100,0 50,-87 -50,-87 -100,-0 -50,87 50,87"></polygon>
     <image
+        v-if="href"
         transform="rotate(30)"
         :x="offsetX"
         :y="offsetY"
@@ -28,17 +29,19 @@
 </template>
 <script>
 export default {
-  props: ['x', 'y', 'z', 'index', 'debug'],
+  props: ['x', 'y', 'z', 'index', 'debug', 'tree'],
   computed: {
     href() {
-      const v = this.index % 5
-      if (v === 0) {
+      if (!this.tree) {
+        return null
+      }
+      if (this.tree.Size === 0) {
         return 'seed.svg'
-      } else if (v === 1) {
+      } else if (this.tree.Size === 1) {
         return 'sprout.svg'
-      } else if (v === 2) {
+      } else if (this.tree.Size === 2) {
         return 'med.svg'
-      } else if (v === 3) {
+      } else if (this.tree.Size === 3) {
         return 'tree.svg'
       }
     },

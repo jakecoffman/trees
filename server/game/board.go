@@ -6,7 +6,7 @@ import (
 
 type Board struct {
 	// Map looks up cell from the coord
-	Map map[Coord]*Cell
+	Map map[Coord]*Cell `json:"-"` // can't serialize non string key
 	// Coords ordered by cell index
 	Coords []Coord
 	// Cells index ordered slice of cells

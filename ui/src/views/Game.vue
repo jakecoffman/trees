@@ -1,6 +1,6 @@
 <template>
   <section>
-    <hex-grid/>
+    <hex-grid :game="game"/>
     State: {{ state }}
   </section>
 </template>
@@ -12,7 +12,8 @@ export default {
   data() {
     return {
       ws: null,
-      state: 'Connecting'
+      state: 'Connecting',
+      game: null
     }
   },
   async mounted() {
@@ -27,7 +28,7 @@ export default {
       return
     }
 
-    this.ws = new WebSocket(`ws://${location.host}/ws`)
+    this.ws = new WebSocket(`ws://${location.host}/ws?action=new`)
     this.ws.onopen = this.wsOpen
     this.ws.onclose = this.wsClose
     this.ws.onerror = this.wsError
@@ -47,6 +48,10 @@ export default {
       console.log(msg)
       const data = JSON.parse(msg.data)
       switch (data.Kind) {
+        case "game":
+          console.log(data.Game)
+          this.game = data.Game
+          break
         default:
           alert('unhandled message:' + msg.data)
           break

@@ -1,10 +1,11 @@
 <template>
   <section>
+    <span v-if="game">{{game.State.Trees}}</span>
     <svg class="board" viewBox="-600 -550 1210 1100">
       <g transform="rotate(-30)" fill="white" stroke="black">
         <g class="grid" id="grid">
           <g v-for="(cell, index) of grid" :key="index" :transform="`translate(${cell.tX},${cell.tY})`">
-            <hex-cell :x="cell.x" :y="cell.y" :z="cell.z" :index="index"/>
+            <hex-cell v-if="game" :x="cell.x" :y="cell.y" :z="cell.z" :index="index" :tree="game.State.Trees[index]"/>
           </g>
         </g>
       </g>
@@ -16,7 +17,10 @@
 import HexCell from "./HexCell.vue";
 
 export default {
-  components: {HexCell},
+  components: {
+    HexCell
+  },
+  props: ['game'],
   data() {
     return {
       grid
