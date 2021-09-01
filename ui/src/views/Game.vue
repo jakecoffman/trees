@@ -1,10 +1,11 @@
 <template>
   <section>
-    <game-header :game="game" :conn="conn"/>
-    <hex-grid v-if="game" :game="game" class="hex-grid"/>
-    <footer>
+    <game-header :game="game" :conn="conn" :you="you"/>
+    <hex-grid v-if="game" :game="game" :you="you" :selection="selection" class="hex-grid" @select="select"/>
+    <aside>
       <button>End Turn</button>
-    </footer>
+    </aside>
+    <game-footer v-if="game && showFooter && selection" :game="game" :selection="selection" :you="you"></game-footer>
 
     <modal v-if="game && game.Players.length !== 2">
       <p>Waiting for opponent</p>
@@ -17,9 +18,11 @@ import Modal from "../components/Modal.vue";
 import GameHeader from "../components/GameHeader.vue";
 import { createToast } from 'mosha-vue-toastify';
 import 'mosha-vue-toastify/dist/style.css'
+import GameFooter from "../components/GameFooter.vue";
 
 export default {
   components: {
+    GameFooter,
     GameHeader,
     Modal,
     HexGrid,
@@ -28,7 +31,10 @@ export default {
     return {
       ws: null,
       conn: 'Connecting',
-      game: null
+      game: null,
+      you: null,
+      showFooter: false,
+      selection: null
     }
   },
   async mounted() {
@@ -60,6 +66,13 @@ export default {
       this.ws.onmessage = this.wsMessage
     }
   },
+  beforeUnmount() {
+    try {
+      this.ws.close()
+    } finally {
+      this.ws = null
+    }
+  },
   methods: {
     wsOpen() {
       this.conn = 'Open'
@@ -86,11 +99,16 @@ export default {
           }
           this.game = data.Room
           this.you = data.You
+          console.log("You", this.you)
           break
         default:
           alert('unhandled message:' + msg.data)
           break
       }
+    },
+    select(index) {
+      this.showFooter = true
+      this.selection = index
     }
   }
 }
@@ -99,14 +117,9 @@ export default {
 .hex-grid {
   padding-bottom: 3rem;
 }
-footer {
+aside {
   position: fixed;
-  bottom: 0;
-  width: 100vw;
-  height: 3rem;
-  background: black;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  right: 6rem;
+  bottom: 6rem;
 }
 </style>

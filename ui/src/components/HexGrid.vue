@@ -11,6 +11,9 @@
                 :index="index"
                 :tree="game.State.Trees[index]"
                 :cell="game.State.Board.Cells[index]"
+                :you="you"
+                :selection="selection"
+                @select="select"
             />
           </g>
         </g>
@@ -26,10 +29,15 @@ export default {
   components: {
     HexCell
   },
-  props: ['game'],
+  props: ['game', 'you', 'selection'],
   data() {
     return {
       grid
+    }
+  },
+  methods: {
+    select(index) {
+      this.$emit('select', index)
     }
   }
 }

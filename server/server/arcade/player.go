@@ -9,7 +9,6 @@ import (
 type Player struct {
 	id   string
 	Name string
-	You  bool
 	ws   *lib.SafetySocket
 	Room *Room `json:"-"`
 }
@@ -17,11 +16,9 @@ type Player struct {
 func (p *Player) MarshalJSON() ([]byte, error) {
 	return json.Marshal(struct {
 		Name      string
-		You       bool
 		Connected bool
 	}{
 		Name:      p.Name,
-		You:       p.You,
 		Connected: p.ws != nil,
 	})
 }

@@ -1,5 +1,5 @@
 <template>
-  <g class="cell">
+  <g class="cell" @click="cellClick">
     <polygon points="100,0 50,-87 -50,-87 -100,-0 -50,87 50,87" :class="polyClass"></polygon>
     <text class="xyz"></text>
     <image v-if="href"
@@ -29,20 +29,28 @@
 </template>
 <script>
 export default {
-  props: ['x', 'y', 'z', 'index', 'debug', 'tree', 'cell'],
+  props: ['x', 'y', 'z', 'index', 'debug', 'tree', 'cell', 'you', 'selection'],
   computed: {
     polyClass() {
+      const classes = {
+        selected: this.selection === this.index
+      }
+
       switch (this.cell.Richness) {
         case 0:
-          return 'richUnusable'
+          classes.richUnusable = true
+          break
         case 1:
-          return 'richLow'
+          classes.richLow = true
+          break
         case 2:
-          return 'richMed'
+          classes.richMed = true
+          break
         case 3:
-          return 'richHigh'
+          classes.richHigh = true
+          break
       }
-      return ''
+      return classes
     },
     href() {
       if (!this.tree) {
@@ -76,10 +84,19 @@ export default {
       }
       return '-40'
     }
+  },
+  methods: {
+    cellClick() {
+      this.$emit('select', this.index)
+    }
   }
 }
 </script>
 <style scoped>
+.selected {
+  stroke: red;
+  stroke-width: 3px;
+}
 .richUnusable {
   fill: gray;
 }
