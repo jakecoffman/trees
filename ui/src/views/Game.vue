@@ -8,7 +8,6 @@
 
     <modal v-if="game && game.Players.length !== 2">
       <p>Waiting for opponent</p>
-      <p>Send them this link: <a :href="url">share</a></p>
     </modal>
   </section>
 </template>
@@ -24,11 +23,6 @@ export default {
     GameHeader,
     Modal,
     HexGrid,
-  },
-  computed: {
-    url() {
-      return location.href
-    }
   },
   data() {
     return {
@@ -91,6 +85,7 @@ export default {
             this.$router.replace(`/game/${data.Room.Code}`)
           }
           this.game = data.Room
+          this.you = data.You
           break
         default:
           alert('unhandled message:' + msg.data)

@@ -41,14 +41,23 @@ type PlayerMessage struct {
 	Kind  string
 	Value string `json:",omitempty"`
 	Room  *Room  `json:",omitempty"`
-	You   int    `json:",omitempty"`
+	You   int
 }
 
 func (r *Room) sendAllGame() {
-	r.sendAll(PlayerMessage{
-		Kind: "room",
-		Room: r,
-	})
+	arr := append(r.Players, r.Spectators...)
+	for i, p := range arr {
+		if p.ws != nil {
+			if err := p.ws.WriteJSON(PlayerMessage{
+				Kind: "room",
+				Room: r,
+				You:  i,
+			}); err != nil {
+				log.Println(err)
+				return
+			}
+		}
+	}
 }
 
 func (r *Room) sendAll(msg PlayerMessage) {
@@ -59,8 +68,6 @@ func (r *Room) sendAll(msg PlayerMessage) {
 				log.Println(err)
 				return
 			}
-		} else {
-			log.Println("SKIPPED")
 		}
 	}
 }

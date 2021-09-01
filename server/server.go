@@ -37,7 +37,7 @@ func main() {
 				Name:   "player",
 				Value:  playerId,
 				Path:   "/",
-				MaxAge: 60,
+				MaxAge: 60 * 60 * 24 * 256, // 1 Year
 			}
 			http.SetCookie(w, cookie)
 		}

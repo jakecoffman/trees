@@ -8,7 +8,7 @@ type Board struct {
 	// Map looks up cell from the coord
 	Map map[Coord]*Cell `json:"-"` // can't serialize non string key
 	// Coords ordered by cell index
-	Coords []Coord
+	Coords []Coord `json:"-"` // fields are not exported
 	// Cells index ordered slice of cells
 	Cells []*Cell
 
