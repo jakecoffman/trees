@@ -8,8 +8,9 @@
         :y="offsetY"
         :width="size"
         :height="size"
-        :style="`filter: sepia(100%) saturate(300%) brightness(70%) ${tree.Owner ? 'hue-rotate(180deg)' : 'hue-rotate(0deg)'};`"
+        :style="`filter: sepia(100%) saturate(300%) brightness(100%) ${tree?.Owner ? 'hue-rotate(180deg)' : 'hue-rotate(0deg)'};`"
         :href="href" />
+    <text v-if="tree?.IsDormant">ZZZ</text>
     <g v-if="debug">
       <text transform="rotate(-90) translate(60, 0) rotate(90) rotate(30) translate(0,10)" class="q-coord">
         {{x}}
@@ -48,29 +49,29 @@ export default {
         return null
       }
       if (this.tree.Size === 0) {
-        return 'seed.svg'
+        return '/seed.svg'
       } else if (this.tree.Size === 1) {
-        return 'sprout.svg'
+        return '/sprout.svg'
       } else if (this.tree.Size === 2) {
-        return 'med.svg'
+        return '/med.svg'
       } else if (this.tree.Size === 3) {
-        return 'tree.svg'
+        return '/tree.svg'
       }
     },
     size() {
-      if (this.href === 'tree.svg') {
+      if (this.href === '/tree.svg') {
         return '150'
       }
       return '80'
     },
     offsetX() {
-      if (this.href === 'tree.svg') {
+      if (this.href === '/tree.svg') {
         return '-75'
       }
       return '-40'
     },
     offsetY() {
-      if (this.href === 'tree.svg') {
+      if (this.href === '/tree.svg') {
         return '-70'
       }
       return '-40'
@@ -79,10 +80,6 @@ export default {
 }
 </script>
 <style scoped>
-.cell:hover {
-  fill: #9b9bff;
-  z-index: 1000;
-}
 .richUnusable {
   fill: gray;
 }

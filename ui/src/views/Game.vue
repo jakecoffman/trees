@@ -1,14 +1,33 @@
 <template>
   <section>
-    <hex-grid :game="game"/>
-    State: {{ state }}
+    <game-header :game="game"/>
+    <hex-grid v-if="game" :game="game"/>
+    <footer>
+      <button>End Turn</button>
+    </footer>
+
+    <modal v-if="game && game.Players.length !== 2">
+      <p>Waiting for opponent</p>
+      <p>Send them this link: <a :href="url">share</a></p>
+    </modal>
   </section>
 </template>
 <script>
 import HexGrid from "../components/HexGrid.vue";
+import Modal from "../components/Modal.vue";
+import GameHeader from "../components/GameHeader.vue";
 
 export default {
-  components: {HexGrid},
+  components: {
+    GameHeader,
+    Modal,
+    HexGrid,
+  },
+  computed: {
+    url() {
+      return location.href
+    }
+  },
   data() {
     return {
       ws: null,
@@ -28,7 +47,14 @@ export default {
       return
     }
 
-    this.ws = new WebSocket(`ws://${location.host}/ws?action=new`)
+    let params = ''
+    if (this.$route.params.id) {
+      params = `action=join&code=${this.$route.params.id}`
+    } else {
+      params = `action=new`
+    }
+
+    this.ws = new WebSocket(`ws://${location.host}/ws?${params}`)
     this.ws.onopen = this.wsOpen
     this.ws.onclose = this.wsClose
     this.ws.onerror = this.wsError
@@ -37,6 +63,7 @@ export default {
   methods: {
     wsOpen() {
       this.state = 'Open'
+      console.log('open')
     },
     wsClose() {
       this.state = 'Closed'
@@ -45,11 +72,14 @@ export default {
       this.state = 'Error'
     },
     wsMessage(msg) {
-      console.log(msg)
       const data = JSON.parse(msg.data)
+      console.log("got message", data.Kind)
       switch (data.Kind) {
         case "game":
           console.log(data.Game)
+          if (!this.$route.params.id) {
+            this.$router.replace(`/game/${data.Game.Code}`)
+          }
           this.game = data.Game
           break
         default:
@@ -60,3 +90,15 @@ export default {
   }
 }
 </script>
+<style scoped>
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100vw;
+  height: 3rem;
+  background: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>

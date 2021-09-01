@@ -64,26 +64,30 @@ func Handle(ws *websocket.Conn, r *http.Request) {
 		}
 		player.game = NewGameWrapper(player)
 	case "join":
-		if player.game != nil {
+		if player.game != nil && player.game.Code != code {
 			player.game.Quit(player)
 			player.game = nil
 		}
-		mutex.RLock()
-		g, ok := games[code]
-		mutex.RUnlock()
-		if !ok {
-			// TODO tell player the game is gone or code is wrong
-			return
+		if player.game == nil {
+			mutex.RLock()
+			g, ok := games[code]
+			mutex.RUnlock()
+			if !ok {
+				log.Printf("Code is wrong, or game is done: %v - %v\n", code, games)
+				// TODO tell player the game is gone or code is wrong
+				return
+			}
+			g.Join(player)
+			player.game = g
 		}
-		g.Join(player)
-		player.game = g
 	default:
 		log.Println("Invalid/missing action:", action)
 		return
 	}
 
 	log.Println("Sending")
-	sendAll(player.game.Players)
+	sendAll(player.game.Players...)
+	log.Println("Sent")
 
 	for {
 		if err := loop(player); err != nil {
@@ -92,15 +96,19 @@ func Handle(ws *websocket.Conn, r *http.Request) {
 	}
 }
 
-func sendAll(to map[string]*Player) {
+func sendAll(to ...*Player) {
 	for _, p := range to {
 		msg := Message{
 			Kind: "game",
 			Game: p.game,
 		}
-		if err := p.ws.WriteJSON(msg); err != nil {
-			log.Println(err)
-			return
+		if p.ws != nil {
+			if err := p.ws.WriteJSON(msg); err != nil {
+				log.Println(err)
+				return
+			}
+		} else {
+			log.Println("SKIPPED")
 		}
 	}
 }

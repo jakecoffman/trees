@@ -8,16 +8,16 @@ import (
 type GameWrapper struct {
 	Code       string
 	State      *game.State
-	Players    map[string]*Player
-	Spectators map[string]*Player
+	Players    []*Player
+	Spectators []*Player
 }
 
 func NewGameWrapper(player *Player) *GameWrapper {
 	g := &GameWrapper{
 		Code:       EncodeToString(6),
 		State:      game.New(),
-		Players:    map[string]*Player{player.id: player},
-		Spectators: map[string]*Player{},
+		Players:    []*Player{player},
+		Spectators: []*Player{},
 	}
 	mutex.Lock()
 	games[g.Code] = g
@@ -42,9 +42,9 @@ func (g *GameWrapper) Quit(quitter *Player) {
 
 func (g *GameWrapper) Join(player *Player) {
 	if len(g.Players) == 2 {
-		g.Spectators[player.id] = player
+		g.Spectators = append(g.Spectators, player)
 	} else {
-		g.Players[player.id] = player
+		g.Players = append(g.Players, player)
 	}
 }
 

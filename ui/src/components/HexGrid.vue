@@ -1,11 +1,10 @@
 <template>
-  <section>
+  <section class="game">
     <svg class="board" viewBox="-610 -560 1220 1115">
       <g transform="rotate(-30)" fill="white" stroke="black">
         <g class="grid" id="grid">
           <g v-for="(cell, index) of grid" :key="index" :transform="`translate(${cell.tX},${cell.tY})`">
             <hex-cell
-                v-if="game"
                 :x="cell.x"
                 :y="cell.y"
                 :z="cell.z"
@@ -298,6 +297,9 @@ const grid = [
 ]
 </script>
 <style scoped>
+.game {
+  background: white;
+}
 .board {
   max-width: 100vw;
   max-height: 90vh;

@@ -9,11 +9,12 @@ export default {}
 <style scoped>
 .modal {
   position: absolute;
-  top: 1rem;
+  top: 50%;
   left: 1rem;
   right: 1rem;
   z-index: 1;
   background: white;
+  color: black;
   border: 1px solid black;
   border-radius: 5px;
 
