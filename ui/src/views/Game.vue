@@ -85,12 +85,12 @@ export default {
         case "msg":
           createToast(data.Value, {type: 'danger', position: 'bottom-right'})
           break
-        case "game":
-          console.log(data.Game)
+        case "room":
+          console.log(data.Room)
           if (!this.$route.params.id) {
-            this.$router.replace(`/game/${data.Game.Code}`)
+            this.$router.replace(`/game/${data.Room.Code}`)
           }
-          this.game = data.Game
+          this.game = data.Room
           break
         default:
           alert('unhandled message:' + msg.data)

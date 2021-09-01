@@ -1,4 +1,4 @@
-package server
+package arcade
 
 import (
 	"crypto/rand"

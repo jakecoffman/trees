@@ -12,6 +12,7 @@ import (
 
 func init() {
 	rand.Seed(time.Now().Unix())
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 }
 
 var upgrader = websocket.Upgrader{
