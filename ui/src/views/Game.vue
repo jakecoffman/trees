@@ -1,6 +1,6 @@
 <template>
   <section>
-    <game-header :game="game"/>
+    <game-header :game="game" :conn="conn"/>
     <hex-grid v-if="game" :game="game" class="hex-grid"/>
     <footer>
       <button>End Turn</button>
@@ -33,7 +33,7 @@ export default {
   data() {
     return {
       ws: null,
-      state: 'Connecting',
+      conn: 'Connecting',
       game: null
     }
   },
@@ -68,15 +68,15 @@ export default {
   },
   methods: {
     wsOpen() {
-      this.state = 'Open'
+      this.conn = 'Open'
       console.log('open')
     },
     wsClose() {
-      this.state = 'Closed'
+      this.conn = 'Closed'
       createToast('Disconnected, please refresh', {type: 'danger', position: 'bottom-right'})
     },
     wsError() {
-      this.state = 'Error'
+      this.conn = 'Error'
       createToast('WebSocket error', {type: 'danger', position: 'bottom-right'})
     },
     wsMessage(msg) {

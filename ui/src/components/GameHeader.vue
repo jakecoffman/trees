@@ -9,12 +9,15 @@
       <span v-if="game.Players.length >= 2 && !game.Players[1].Connected">(Disconnected)</span>
       </span>
     <span>OPT</span>
-    <span>Day {{game.State.Day}} Nutrients {{game.State.Nutrients}}</span>
+    <span class="flex">
+      <span class="grow">Day {{game.State.Day}} Nutrients {{game.State.Nutrients}}</span>
+      <span v-if="conn !== 'Open'">Connection {{conn}}</span>
+    </span>
   </header>
 </template>
 <script>
 export default {
-  props: ['game']
+  props: ['game', 'conn']
 }
 </script>
 <style scoped>

@@ -18,4 +18,10 @@ body {
 .blue {
   color: #8fa2ff;
 }
+.flex {
+  display: flex;
+}
+.grow {
+  flex-grow: 1;
+}
 </style>

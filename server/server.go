@@ -4,6 +4,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/jakecoffman/trees/server/server"
+	"github.com/jakecoffman/trees/server/server/lib"
 	"log"
 	"math/rand"
 	"net/http"
@@ -54,7 +55,7 @@ func main() {
 		}
 		defer ws.Close()
 
-		server.Handle(ws, r)
+		server.Handle(lib.NewSafetySocket(ws), r)
 	})
 	log.Println("Serving http://127.0.0.1:8080")
 	if err := http.ListenAndServe("127.0.0.1:8080", mux); err != nil {

@@ -2,7 +2,7 @@ package arcade
 
 import (
 	"encoding/json"
-	"github.com/gorilla/websocket"
+	"github.com/jakecoffman/trees/server/server/lib"
 	"log"
 )
 
@@ -10,7 +10,7 @@ type Player struct {
 	id   string
 	Name string
 	You  bool
-	ws   *websocket.Conn
+	ws   *lib.SafetySocket
 	Room *Room `json:"-"`
 }
 
@@ -26,7 +26,7 @@ func (p *Player) MarshalJSON() ([]byte, error) {
 	})
 }
 
-func SendMsg(ws *websocket.Conn, text string) {
+func SendMsg(ws *lib.SafetySocket, text string) {
 	msg := PlayerMessage{
 		Kind:  "msg",
 		Value: text,

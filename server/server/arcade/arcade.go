@@ -1,7 +1,7 @@
 package arcade
 
 import (
-	"github.com/gorilla/websocket"
+	"github.com/jakecoffman/trees/server/server/lib"
 	"log"
 	"sync"
 )
@@ -18,7 +18,7 @@ var Building = bldg{
 }
 
 // Enter the player enters the Arcade
-func (b *bldg) Enter(playerId string, ws *websocket.Conn) *Player {
+func (b *bldg) Enter(playerId string, ws *lib.SafetySocket) *Player {
 	b.mutex.RLock()
 	player := b.players[playerId]
 	b.mutex.RUnlock()

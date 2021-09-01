@@ -2,13 +2,13 @@ package server
 
 import (
 	"fmt"
-	"github.com/gorilla/websocket"
 	"github.com/jakecoffman/trees/server/server/arcade"
+	"github.com/jakecoffman/trees/server/server/lib"
 	"log"
 	"net/http"
 )
 
-func Handle(ws *websocket.Conn, r *http.Request) {
+func Handle(ws *lib.SafetySocket, r *http.Request) {
 	var playerId string
 
 	// extract cookie or create a new playerId
