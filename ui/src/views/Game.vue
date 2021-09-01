@@ -2,10 +2,7 @@
   <section>
     <game-header :game="game" :conn="conn" :you="you"/>
     <hex-grid v-if="game" :game="game" :you="you" :selection="selection" class="hex-grid" @select="select"/>
-    <aside>
-      <button>End Turn</button>
-    </aside>
-    <game-footer v-if="game && showFooter && selection" :game="game" :selection="selection" :you="you"></game-footer>
+    <game-footer v-if="game" :game="game" :selection="selection" :you="you"></game-footer>
 
     <modal v-if="game && game.Players.length !== 2">
       <p>Waiting for opponent</p>
@@ -116,10 +113,5 @@ export default {
 <style scoped>
 .hex-grid {
   padding-bottom: 3rem;
-}
-aside {
-  position: fixed;
-  right: 6rem;
-  bottom: 6rem;
 }
 </style>
