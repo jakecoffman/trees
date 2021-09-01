@@ -1,7 +1,7 @@
 <template>
   <section>
     <game-header :game="game"/>
-    <hex-grid v-if="game" :game="game"/>
+    <hex-grid v-if="game" :game="game" class="hex-grid"/>
     <footer>
       <button>End Turn</button>
     </footer>
@@ -16,6 +16,8 @@
 import HexGrid from "../components/HexGrid.vue";
 import Modal from "../components/Modal.vue";
 import GameHeader from "../components/GameHeader.vue";
+import { createToast } from 'mosha-vue-toastify';
+import 'mosha-vue-toastify/dist/style.css'
 
 export default {
   components: {
@@ -49,16 +51,20 @@ export default {
 
     let params = ''
     if (this.$route.params.id) {
+      console.log('JOINING')
       params = `action=join&code=${this.$route.params.id}`
     } else {
+      console.log('NEWING')
       params = `action=new`
     }
 
-    this.ws = new WebSocket(`ws://${location.host}/ws?${params}`)
-    this.ws.onopen = this.wsOpen
-    this.ws.onclose = this.wsClose
-    this.ws.onerror = this.wsError
-    this.ws.onmessage = this.wsMessage
+    if (!this.ws) {
+      this.ws = new WebSocket(`ws://${location.host}/ws?${params}`)
+      this.ws.onopen = this.wsOpen
+      this.ws.onclose = this.wsClose
+      this.ws.onerror = this.wsError
+      this.ws.onmessage = this.wsMessage
+    }
   },
   methods: {
     wsOpen() {
@@ -67,14 +73,18 @@ export default {
     },
     wsClose() {
       this.state = 'Closed'
+      createToast('Disconnected, please refresh', {type: 'danger', position: 'bottom-right'})
     },
     wsError() {
       this.state = 'Error'
+      createToast('WebSocket error', {type: 'danger', position: 'bottom-right'})
     },
     wsMessage(msg) {
       const data = JSON.parse(msg.data)
-      console.log("got message", data.Kind)
       switch (data.Kind) {
+        case "msg":
+          createToast(data.Value, {type: 'danger', position: 'bottom-right'})
+          break
         case "game":
           console.log(data.Game)
           if (!this.$route.params.id) {
@@ -91,6 +101,9 @@ export default {
 }
 </script>
 <style scoped>
+.hex-grid {
+  padding-bottom: 3rem;
+}
 footer {
   position: fixed;
   bottom: 0;

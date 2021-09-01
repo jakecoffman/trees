@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
@@ -22,10 +23,11 @@ func Handle(ws *websocket.Conn, r *http.Request) {
 		cookie, err := r.Cookie("player")
 		if err != nil {
 			log.Println("Player failed to connect:", err.Error())
+			sendMsg(ws, "Failed to connect, missing player cookie")
 			return
 		} else {
 			playerId = cookie.Value
-			log.Println("Reconnect", playerId)
+			log.Println(playerId, "Connected")
 		}
 	}
 
@@ -35,6 +37,7 @@ func Handle(ws *websocket.Conn, r *http.Request) {
 	mutex.RUnlock()
 	if player == nil {
 		mutex.Lock()
+		log.Println(playerId, "New Player Object")
 		player = &Player{
 			id: playerId,
 			ws: ws,
@@ -45,49 +48,57 @@ func Handle(ws *websocket.Conn, r *http.Request) {
 		player.ws = ws
 	}
 	defer func() {
-		mutex.Lock()
 		player.ws = nil
-		mutex.Unlock()
+		if player.game != nil {
+			sendAllGame(player.game)
+			sendAll(player.game, Message{Kind: "msg", Value: "Player disconnected"})
+		}
 	}()
 
 	// handle what the player is trying to do
-	log.Println("QUERY", r.URL.Query())
 	action := r.URL.Query().Get("action")
 	code := r.URL.Query().Get("code")
 
 	switch action {
 	case "new":
-		log.Println("Starting new game")
+		str := fmt.Sprint(playerId)
 		if player.game != nil {
+			str += " leaving"
 			player.game.Quit(player)
 			player.game = nil
 		}
+		str += " new"
+		log.Println(str)
 		player.game = NewGameWrapper(player)
 	case "join":
+		str := fmt.Sprint(playerId)
 		if player.game != nil && player.game.Code != code {
+			str += " leaving"
 			player.game.Quit(player)
 			player.game = nil
 		}
 		if player.game == nil {
 			mutex.RLock()
+			str += " fresh"
 			g, ok := games[code]
 			mutex.RUnlock()
 			if !ok {
-				log.Printf("Code is wrong, or game is done: %v - %v\n", code, games)
-				// TODO tell player the game is gone or code is wrong
+				sendMsg(player.ws, fmt.Sprintf("Code is wrong, or game is gone: %v", code))
 				return
 			}
 			g.Join(player)
 			player.game = g
 		}
+		str += " joined"
+		log.Println(str)
 	default:
 		log.Println("Invalid/missing action:", action)
+		sendMsg(ws, "Invalid action: "+action)
 		return
 	}
 
-	log.Println("Sending")
-	sendAll(player.game.Players...)
-	log.Println("Sent")
+	sendAllGame(player.game)
+	sendAll(player.game, Message{Kind: "msg", Value: "Player connected"})
 
 	for {
 		if err := loop(player); err != nil {
@@ -96,12 +107,16 @@ func Handle(ws *websocket.Conn, r *http.Request) {
 	}
 }
 
-func sendAll(to ...*Player) {
-	for _, p := range to {
-		msg := Message{
-			Kind: "game",
-			Game: p.game,
-		}
+func sendAllGame(game *GameWrapper) {
+	sendAll(game, Message{
+		Kind: "game",
+		Game: game,
+	})
+}
+
+func sendAll(game *GameWrapper, msg Message) {
+	arr := append(game.Players, game.Spectators...)
+	for _, p := range arr {
 		if p.ws != nil {
 			if err := p.ws.WriteJSON(msg); err != nil {
 				log.Println(err)
@@ -110,6 +125,21 @@ func sendAll(to ...*Player) {
 		} else {
 			log.Println("SKIPPED")
 		}
+	}
+}
+
+func sendMsg(ws *websocket.Conn, text string) {
+	msg := Message{
+		Kind:  "msg",
+		Value: text,
+	}
+	if ws != nil {
+		if err := ws.WriteJSON(msg); err != nil {
+			log.Println(err)
+			return
+		}
+	} else {
+		log.Println("SKIPPED")
 	}
 }
 
