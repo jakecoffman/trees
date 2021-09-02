@@ -32,9 +32,10 @@ export default {
   props: ['x', 'y', 'z', 'index', 'debug', 'tree', 'cell', 'you', 'selection'],
   computed: {
     polyClass() {
-      const classes = {
-        selected: this.selection === this.index
+      if (this.selection === this.index) {
+        return {selected: true}
       }
+      const classes = {}
 
       switch (this.cell.Richness) {
         case 0:
@@ -94,8 +95,9 @@ export default {
 </script>
 <style scoped>
 .selected {
-  stroke: red;
-  stroke-width: 3px;
+  opacity: 50%;
+  fill: red;
+  /*stroke-width: 3px;*/
 }
 .richUnusable {
   fill: gray;

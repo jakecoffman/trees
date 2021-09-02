@@ -77,9 +77,13 @@ func Handle(ws *lib.SafetySocket, r *http.Request) {
 		}
 		switch msg.Kind {
 		case "end":
+			log.Println("GOT END")
 		case "seed":
+			log.Println("GOT SEED")
 		case "grow":
+			log.Println("GOT GROW")
 		case "sell":
+			log.Println("GOT SELL")
 		}
 	}
 }

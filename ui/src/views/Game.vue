@@ -3,7 +3,6 @@
     <game-header :game="game" :conn="conn" :you="you"/>
     <hex-grid v-if="game" :game="game" :you="you" :selection="selection" class="hex-grid" @select="select"/>
     <game-footer v-if="game" :game="game" :selection="selection" :you="you"></game-footer>
-
     <modal v-if="game && game.Players.length !== 2">
       <p>Waiting for opponent</p>
     </modal>
@@ -16,6 +15,7 @@ import GameHeader from "../components/GameHeader.vue";
 import { createToast } from 'mosha-vue-toastify';
 import 'mosha-vue-toastify/dist/style.css'
 import GameFooter from "../components/GameFooter.vue";
+import {computed} from 'vue'
 
 export default {
   components: {
@@ -32,6 +32,11 @@ export default {
       you: null,
       showFooter: false,
       selection: null
+    }
+  },
+  provide() {
+    return {
+      ws: computed(() => this.ws)
     }
   },
   async mounted() {

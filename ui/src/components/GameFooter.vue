@@ -3,16 +3,16 @@
     <div v-if="selection">
       <span v-if="cell">Richness: {{cell.Richness}} &nbsp;</span>
       <span v-if="tree">
-        <span>{{tree.Owner === you ? 'Your' : 'Opponent'}} Tree: Size {{tree.Size}}</span>
+        <span>{{tree.Owner === you ? 'Your' : `Opponent's`}} Tree: Size {{tree.Size}}</span>
         <span v-if="tree.IsDormant">Dormant</span>
       </span>
     </div>
     <div>
-      <button>End Turn</button>
+      <button @click="endTurn()">End Turn</button>
       <span v-if="tree && tree.Owner === you && !tree.IsDormant">
-        <button v-if="tree.Size >= 1">Seed</button>
-        <button v-if="tree.Size < 3">Grow</button>
-        <button v-if="tree.Size === 3">Sell</button>
+        <button v-if="tree.Size >= 1" @click="seed(selection)">Seed</button>
+        <button v-if="tree.Size < 3" @click="grow(selection)">Grow</button>
+        <button v-if="tree.Size === 3" @click="sell(selection)">Sell</button>
       </span>
     </div>
   </footer>
@@ -20,6 +20,7 @@
 <script>
 export default {
   props: ['game', 'selection', 'you'],
+  inject: ['ws'],
   computed: {
     cell() {
       if (!this.selection) {
@@ -32,6 +33,20 @@ export default {
         return null
       }
       return this.game.State.Trees[this.selection.toString()]
+    }
+  },
+  methods: {
+    endTurn() {
+      this.ws.value.send(JSON.stringify({Kind: 'end'}))
+    },
+    seed(selection) {
+      this.ws.value.send(JSON.stringify({Kind: 'seed', Index: selection}))
+    },
+    sell(selection) {
+      this.ws.value.send(JSON.stringify({Kind: 'sell', Index: selection}))
+    },
+    grow(selection) {
+      this.ws.value.send(JSON.stringify({Kind: 'grow', Index: selection}))
     }
   }
 }
