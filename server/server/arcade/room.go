@@ -1,6 +1,7 @@
 package arcade
 
 import (
+	"fmt"
 	"github.com/jakecoffman/trees/server/game"
 	"log"
 )
@@ -72,14 +73,17 @@ func (r *Room) sendAll(msg PlayerMessage) {
 
 func (r *Room) Join(joiner *Player) {
 	r.input <- Cmd{Kind: CmdJoin, Player: joiner}
+	joiner.Room = r
 }
 
 func (r *Room) Rejoin(player *Player) {
 	r.input <- Cmd{Kind: CmdRejoin, Player: player}
+	player.Room = r
 }
 
 func (r *Room) Quit(quitter *Player) {
 	r.input <- Cmd{Kind: CmdQuit, Player: quitter}
+	quitter.Room = nil
 }
 
 func (r *Room) CastSeed(player *Player, source, target int) {
@@ -103,10 +107,34 @@ func (r *Room) loop() {
 
 	for {
 		if moves[0] != nil && moves[1] != nil {
-			log.Println("BOTH PLAYERS ENTERED A MOVE")
 			// both players have entered a move, execute them "simultaneously"
-
 			r.applyMoves(moves)
+
+			if r.State.Day == maxDays {
+				r.State.Score[0] += r.State.Energy[0] / 3
+				r.State.Score[1] += r.State.Energy[1] / 3
+				r.sendAllGame()
+				var msg string
+				if r.State.Score[0] == r.State.Score[1] {
+					msg = "Tie!"
+				} else if r.State.Score[0] > r.State.Score[1] {
+					msg = "Orange wins!"
+				} else {
+					msg = "Blue wins!"
+				}
+				r.sendAll(PlayerMessage{
+					Kind:  "msg",
+					Value: msg,
+				})
+				Building.Shut(r)
+				r.Players[0].Room = nil
+				r.Players[1].Room = nil
+				return
+			}
+
+			if r.State.Day == maxDays-1 {
+				r.sendAll(PlayerMessage{Kind: "msg", Value: "Final turn!"})
+			}
 
 			if moves[0].Type == game.Wait && moves[1].Type == game.Wait {
 				moves[0] = nil
@@ -134,6 +162,7 @@ func (r *Room) loop() {
 			case CmdQuit:
 				r.quit(cmd.Player)
 				r.sendAllGame()
+				return
 			default:
 				var move *game.Action
 				var playerIndex int
@@ -161,7 +190,6 @@ func (r *Room) loop() {
 						continue
 					}
 				} else if cmd.Kind == CmdGrow {
-					log.Println("PLAYER", playerIndex, "GROW", cmd.Src)
 					move = &game.Action{Type: game.Grow, TargetCellIdx: cmd.Tgt}
 					_, err := r.State.ApplyGrow(playerIndex, move)
 					if err != nil {
@@ -170,12 +198,14 @@ func (r *Room) loop() {
 					}
 				}
 
-				log.Println(r.Code, "PLAYER", playerIndex, move.String())
+				//log.Println(r.Code, "PLAYER", playerIndex, move.String())
 				moves[playerIndex] = move
 			}
 		}
 	}
 }
+
+const maxDays = 26
 
 func (r *Room) applyMoves(moves [2]*game.Action) {
 	state := r.State
@@ -191,6 +221,7 @@ func (r *Room) applyMoves(moves [2]*game.Action) {
 	}
 
 	if moves[0].Type == game.Wait && moves[1].Type == game.Wait {
+		state.Day++
 		state.Sun = state.Sun.Move()
 		state = state.GatherSun()
 	}
@@ -259,11 +290,11 @@ func (r *Room) join(player *Player) {
 }
 
 func (r *Room) quit(quitter *Player) {
-	for _, p := range r.Players {
+	for i, p := range r.Players {
 		if p == quitter {
-			r.sendAll(PlayerMessage{Kind: "msg", Value: "Player has quit"})
-			return
+			r.sendAll(PlayerMessage{Kind: "msg", Value: fmt.Sprintf("Player %v has quit", i+1)})
 		}
+		p.Room = nil
 	}
 	Building.Shut(r)
 }

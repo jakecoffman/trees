@@ -6,7 +6,7 @@
     <div v-if="selection">
       {{richnessText}} {{treeText}}
     </div>
-    <div>
+    <div v-if="game.State.Day < 27">
       <button @click="endTurn()" v-if="!seedSource">End Turn</button>
       <span v-if="tree && tree.Owner === you && !tree.IsDormant && !seedSource">
         <button v-if="tree.Size >= 1" @click="seed1(selection)" :disabled="seedCost > game.State.Energy[you]">
@@ -27,6 +27,11 @@
         <button @click="seedSource = null">Cancel Seed</button>
       </div>
     </div>
+    <span v-else>
+      <span v-if="game.State.Score[0] === game.State.Score[1]">Tie Game!</span>
+      <span v-else-if="game.State.Score[0] > game.State.Score[1]">Orange Wins!</span>
+      <span v-else>Blue Wins!</span>
+    </span>
   </footer>
 </template>
 <script>

@@ -31,6 +31,8 @@ func Handle(ws *lib.SafetySocket, r *http.Request) {
 	action := r.URL.Query().Get("action")
 	code := r.URL.Query().Get("code")
 
+	var room *arcade.Room
+
 	switch action {
 	case "new":
 		str := fmt.Sprint(playerId)
@@ -38,28 +40,26 @@ func Handle(ws *lib.SafetySocket, r *http.Request) {
 			// player is already in a room, leave it
 			str += " leaving"
 			player.Room.Quit(player)
-			player.Room = nil
 		}
 		str += " new"
 		log.Println(str)
-		player.Room = arcade.NewRoom()
-		player.Room.Join(player)
+		room = arcade.NewRoom()
+		room.Join(player)
 	case "join":
 		str := fmt.Sprint(playerId)
 		if player.Room != nil && player.Room.Code != code {
 			str += " leaving"
 			player.Room.Quit(player)
-			player.Room = nil
 		}
 		if player.Room == nil {
-			room, ok := arcade.Building.FindRoom(code)
+			var ok bool
+			room, ok = arcade.Building.FindRoom(code)
 			str += " fresh join"
 			if !ok {
 				arcade.SendMsg(ws, fmt.Sprintf("Code is wrong, or room is gone: %v", code))
 				return
 			}
 			room.Join(player)
-			player.Room = room
 		} else {
 			player.Room.Rejoin(player)
 			str += " rejoined"
@@ -76,16 +76,15 @@ func Handle(ws *lib.SafetySocket, r *http.Request) {
 		if err := ws.ReadJSON(&msg); err != nil {
 			return
 		}
-		log.Printf("GOT MESSAGE FROM WS: %#v\n", msg)
 		switch msg.Kind {
 		case "end":
-			player.Room.EndTurn(player)
+			room.EndTurn(player)
 		case "seed":
-			player.Room.CastSeed(player, msg.Source, msg.Target)
+			room.CastSeed(player, msg.Source, msg.Target)
 		case "grow":
-			player.Room.GrowTree(player, msg.Target)
+			room.GrowTree(player, msg.Target)
 		case "sell":
-			player.Room.SellTree(player, msg.Target)
+			room.SellTree(player, msg.Target)
 		}
 	}
 }

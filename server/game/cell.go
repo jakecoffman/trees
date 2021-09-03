@@ -10,5 +10,5 @@ const (
 type Cell struct {
 	Index     int
 	Richness  int
-	Neighbors []int
+	Neighbors []int `json:"-"` // FE doesn't need this?
 }

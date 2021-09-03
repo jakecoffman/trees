@@ -24,8 +24,8 @@ export function seedCost(player, state) {
 
 function cost(player, size, state) {
   let c = treeBaseCost[size]
-  for (const tree in state.Trees) {
-    if (tree.Size === size && player === tree.Owner) {
+  for (const index in state.Trees) {
+    if (state.Trees[index].Size === size && player === state.Trees[index].Owner) {
       c++
     }
   }
