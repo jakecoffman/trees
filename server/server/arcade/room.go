@@ -104,6 +104,13 @@ func (r *Room) EndTurn(player *Player) {
 
 func (r *Room) loop() {
 	var moves [2]*game.Action
+	defer func() {
+		if rc := recover(); rc != nil {
+			fmt.Println("Room", r.Code, "has crashed:", rc)
+		} else {
+			log.Println("Room", r.Code, "has closed")
+		}
+	}()
 
 	for {
 		if moves[0] != nil && moves[1] != nil {
@@ -215,6 +222,7 @@ func (r *Room) applyMoves(moves [2]*game.Action) {
 			// seed is not planted, refund sun, make source trees dormant
 			state.Trees[moves[0].SourceCellIdx].IsDormant = true
 			state.Trees[moves[1].SourceCellIdx].IsDormant = true
+			r.sendAll(PlayerMessage{Kind: "msg", Value: "Both players seeded the same hex, seed was removed."})
 			// TODO refund sun?
 			return
 		}

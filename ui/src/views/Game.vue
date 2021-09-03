@@ -81,7 +81,6 @@ export default {
     },
     wsClose() {
       this.conn = 'Closed'
-      createToast('Disconnected, please refresh', {type: 'danger', position: 'bottom-right'})
     },
     wsError() {
       this.conn = 'Error'
@@ -95,7 +94,7 @@ export default {
           break
         case "room":
           console.log(data.Room)
-          if (!this.$route.params.id) {
+          if (this.$route.params.id !== data.Room.Code) {
             this.$router.replace(`/game/${data.Room.Code}`)
           }
           this.game = data.Room

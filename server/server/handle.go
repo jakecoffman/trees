@@ -9,6 +9,13 @@ import (
 )
 
 func Handle(ws *lib.SafetySocket, r *http.Request) {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Handler crashed", r)
+		} else {
+			log.Println("Player disconnected")
+		}
+	}()
 	var playerId string
 
 	// extract cookie or create a new playerId

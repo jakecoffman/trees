@@ -48,6 +48,7 @@ func main() {
 		w.Write([]byte(`{"status": "ok"}`))
 	})
 	mux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Incoming ws connection")
 		ws, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			log.Print("upgrade:", err)
