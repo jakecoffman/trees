@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/jakecoffman/trees/server/game"
 	"log"
+	"runtime/debug"
 )
 
 const (
@@ -106,7 +107,7 @@ func (r *Room) loop() {
 	var moves [2]*game.Action
 	defer func() {
 		if rc := recover(); rc != nil {
-			fmt.Println("Room", r.Code, "has crashed:", rc)
+			fmt.Println("Room", r.Code, "has crashed:", rc, string(debug.Stack()))
 		} else {
 			log.Println("Room", r.Code, "has closed")
 		}
@@ -255,7 +256,7 @@ func (r *Room) applyMoves(moves [2]*game.Action) {
 	if moves[1].Type == game.Grow {
 		state = sanity(state.ApplyGrow(1, moves[1]))
 	}
-
+	state.Shadows = state.Sun.CalculateShadows(state)
 	r.State = state
 }
 

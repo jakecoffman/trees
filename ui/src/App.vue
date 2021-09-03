@@ -14,13 +14,19 @@ body {
   font-size: 16pt;
 }
 .orange {
-  color: orange;
+  color: #FFA500;
+}
+.dark-orange {
+  color: #c48712;
 }
 .orange-bg {
-  background: orange;
+  background: #FFA500;
 }
 .blue {
   color: #8fa2ff;
+}
+.dark-blue {
+  color: #334ed9;
 }
 .blue-bg {
   background: #8fa2ff;

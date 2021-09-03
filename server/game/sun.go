@@ -9,21 +9,24 @@ func (s Sun) Move() Sun {
 	return s
 }
 
-func (s Sun) CalculateShadows(state *State) [6][SizeLarge + 1]uint64 {
-	var shadows [6][4]uint64
-	nextSun := s.Move()
-	for o := 0; o < 6; o++ {
-		for j := range state.Trees {
-			tree := state.Trees[j]
-			coord := state.Board.Coords[tree.CellIndex]
-			for i := 1; i <= tree.Size; i++ { // huge bug here <=
-				tempCoord := coord.Neighbor(nextSun.Orientation, i)
-				if IsCoordValid(tempCoord) {
-					shadows[o][tree.Size] |= 1 << CoordToIndex(tempCoord)
-				}
+// CalculateShadows returns shadows for the current sun.
+func (s Sun) CalculateShadows(state *State) [SizeLarge + 1][]int {
+	shadows := [4][]int{
+		// doing initialization to make frontend code simpler
+		0: {},
+		1: {},
+		2: {},
+		3: {},
+	}
+	for j := range state.Trees {
+		tree := state.Trees[j]
+		coord := state.Board.Coords[tree.CellIndex]
+		for i := 1; i <= tree.Size; i++ { // huge bug here <=
+			tempCoord := coord.Neighbor(s.Orientation, i)
+			if IsCoordValid(tempCoord) {
+				shadows[tree.Size] = append(shadows[tree.Size], CoordToIndex(tempCoord))
 			}
 		}
-		nextSun = nextSun.Move()
 	}
 
 	return shadows

@@ -6,12 +6,13 @@ import (
 	"github.com/jakecoffman/trees/server/server/lib"
 	"log"
 	"net/http"
+	"runtime/debug"
 )
 
 func Handle(ws *lib.SafetySocket, r *http.Request) {
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Println("Handler crashed", r)
+			fmt.Println("Handler crashed:", r, string(debug.Stack()))
 		} else {
 			log.Println("Player disconnected")
 		}

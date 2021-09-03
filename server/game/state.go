@@ -14,7 +14,7 @@ type State struct {
 
 	Energy  []int
 	Score   []int
-	Shadows [6][4]uint64
+	Shadows [SizeLarge + 1][]int
 }
 
 func New() *State {
@@ -68,6 +68,7 @@ func (s *State) Clone() *State {
 	newState.Nutrients = s.Nutrients
 	newState.Energy = []int{s.Energy[0], s.Energy[1]}
 	newState.Score = []int{s.Score[0], s.Score[1]}
+	newState.Shadows = s.Shadows // shadows treated as immutable
 
 	return newState
 }

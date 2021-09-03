@@ -2,7 +2,14 @@
   <g class="cell" @click="cellClick">
     <polygon points="100,0 50,-87 -50,-87 -100,-0 -50,87 50,87" :class="polyClass"></polygon>
     <text class="xyz"></text>
-    <image v-if="href" transform="rotate(30)" :x="offsetX" :y="offsetY" :width="size" :height="size" :class="{bluePlayer: tree?.Owner, orangePlayer: !tree?.Owner}" :href="href" />
+    <image v-if="href"
+           transform="rotate(30)"
+           :x="offsetX"
+           :y="offsetY"
+           :width="size"
+           :height="size"
+           :class="{'no-sun': tree?.Size <= shadow}"
+           :href="href" />
     <text v-if="tree?.IsDormant" transform="rotate(30) translate(-50, 30)" style="font-size: 72pt">💤</text>
     <g v-if="debug">
       <text transform="rotate(-90) translate(60, 0) rotate(90) rotate(30) translate(0,10)" class="q-coord">
@@ -22,13 +29,39 @@
 </template>
 <script>
 export default {
-  props: ['hex', 'index', 'debug', 'tree', 'cell', 'you', 'selection'],
+  props: ['hex', 'index', 'debug', 'game', 'you', 'selection'],
   computed: {
+    tree() {
+      return this.game.State.Trees[this.index]
+    },
+    cell() {
+      return this.game.State.Board.Cells[this.index]
+    },
+    shadow() {
+      if (this.game.State.Shadows[3] == null) {
+        // not sure why but sometimes shadows is [null, null, null, null]
+        return
+      }
+      if (this.game.State.Shadows[3].includes(this.index)) {
+        return 3
+      }
+      if (this.game.State.Shadows[2].includes(this.index)) {
+        return 2
+      }
+      if (this.game.State.Shadows[1].includes(this.index)) {
+        return 1
+      }
+      return 0
+    },
     polyClass() {
       if (this.selection === this.index) {
         return {selected: true}
       }
       const classes = {}
+
+      if (this.shadow > 0) {
+        classes.shadow = true
+      }
 
       switch (this.cell.Richness) {
         case 0:
@@ -50,30 +83,37 @@ export default {
       if (!this.tree) {
         return null
       }
-      if (this.tree.Size === 0) {
-        return '/seed.svg'
-      } else if (this.tree.Size === 1) {
-        return '/sprout.svg'
-      } else if (this.tree.Size === 2) {
-        return '/med.svg'
-      } else if (this.tree.Size === 3) {
-        return '/tree.svg'
+      let path = "/"
+      if (this.tree.Owner) {
+        path += 'orange'
+      } else {
+        path += 'blue'
       }
+      if (this.tree.Size === 0) {
+        path += '/seed.svg'
+      } else if (this.tree.Size === 1) {
+        path += '/sprout.svg'
+      } else if (this.tree.Size === 2) {
+        path += '/med.svg'
+      } else if (this.tree.Size === 3) {
+        path += '/tree.svg'
+      }
+      return path
     },
     size() {
-      if (this.href === '/tree.svg') {
+      if (this.tree.Size === 3) {
         return '150'
       }
       return '80'
     },
     offsetX() {
-      if (this.href === '/tree.svg') {
+      if (this.tree.Size === 3) {
         return '-75'
       }
       return '-40'
     },
     offsetY() {
-      if (this.href === '/tree.svg') {
+      if (this.tree.Size === 3) {
         return '-70'
       }
       return '-40'
@@ -93,7 +133,7 @@ export default {
   /*stroke-width: 3px;*/
 }
 .richUnusable {
-  fill: gray;
+  fill: blue;
 }
 .richLow {
   fill: darkseagreen;
@@ -104,10 +144,10 @@ export default {
 .richHigh {
   fill: green;
 }
-.bluePlayer {
-  filter: sepia(100%) saturate(300%) brightness(100%) hue-rotate(180deg);
+.shadow {
+  filter: brightness(50%);
 }
-.orangePlayer {
-  filter: sepia(100%) saturate(300%) brightness(100%) hue-rotate(0deg);
+.no-sun {
+  filter: brightness(50%) !important;
 }
 </style>

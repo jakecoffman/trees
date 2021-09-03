@@ -118,11 +118,6 @@ func (s *State) RandomizeBoard() {
 	}
 }
 
-// IsSet returns true iff the nth bit of v is set
-func IsSet(v uint64, n int) bool {
-	return (v & 1 << n) > 0
-}
-
 // GatherSun calculates shadows and adds energy to players
 func (s *State) GatherSun() *State {
 	state := s.Clone()
@@ -131,16 +126,25 @@ func (s *State) GatherSun() *State {
 		tree := state.Trees[i]
 		state.Trees[i].IsDormant = false
 		if tree.Owner == 0 {
-			if !IsSet(state.Shadows[0][tree.Size], tree.CellIndex) {
+			if !contains(state.Shadows[tree.Size], tree.CellIndex) {
 				state.Energy[0] += tree.Size
 			}
 		} else {
-			if !IsSet(state.Shadows[0][tree.Size], tree.CellIndex) {
+			if !contains(state.Shadows[tree.Size], tree.CellIndex) {
 				state.Energy[1] += tree.Size
 			}
 		}
 	}
 	return state
+}
+
+func contains(haystack []int, needle int) bool {
+	for i := range haystack {
+		if needle == haystack[i] {
+			return true
+		}
+	}
+	return false
 }
 
 var treeBaseCost = []int{0, 1, 3, 7}

@@ -7,8 +7,7 @@
             <hex-cell
                 :hex="hex"
                 :index="index"
-                :tree="game.State.Trees[index]"
-                :cell="game.State.Board.Cells[index]"
+                :game="game"
                 :you="you"
                 :selection="selection"
                 @select="select"
