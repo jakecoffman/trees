@@ -111,10 +111,13 @@ func (r *Room) loop() {
 			if moves[0].Type == game.Wait && moves[1].Type == game.Wait {
 				moves[0] = nil
 				moves[1] = nil
-			} else if moves[0].Type != game.Wait {
-				moves[0] = nil
-			} else if moves[1].Type != game.Wait {
-				moves[1] = nil
+			} else {
+				if moves[0].Type != game.Wait {
+					moves[0] = nil
+				}
+				if moves[1].Type != game.Wait {
+					moves[1] = nil
+				}
 			}
 			// update everyone
 			r.sendAllGame()
@@ -192,29 +195,40 @@ func (r *Room) applyMoves(moves [2]*game.Action) {
 		state = state.GatherSun()
 	}
 	if moves[0].Type == game.Seed {
-		state, _ = state.ApplySeed(0, moves[0])
+		state = sanity(state.ApplySeed(0, moves[0]))
 	}
 	if moves[1].Type == game.Seed {
-		state, _ = state.ApplySeed(1, moves[1])
+		state = sanity(state.ApplySeed(1, moves[1]))
 	}
 	var nutrientsLost int
 	if moves[0].Type == game.Complete {
 		nutrientsLost++
-		state, _ = state.ApplyComplete(0, moves[0])
+		state = sanity(state.ApplyComplete(0, moves[0]))
 	}
 	if moves[1].Type == game.Complete {
 		nutrientsLost++
-		state, _ = state.ApplyComplete(1, moves[1])
+		state = sanity(state.ApplyComplete(1, moves[1]))
 	}
 	state.Nutrients = max(0, state.Nutrients-nutrientsLost)
 	if moves[0].Type == game.Grow {
-		state, _ = state.ApplyGrow(0, moves[0])
+		state = sanity(state.ApplyGrow(0, moves[0]))
 	}
 	if moves[1].Type == game.Grow {
-		state, _ = state.ApplyGrow(1, moves[1])
+		state = sanity(state.ApplyGrow(1, moves[1]))
 	}
 
 	r.State = state
+}
+
+// there shouldn't be errors, but if there is lets panic so they can be fixed
+func sanity(state *game.State, err error) *game.State {
+	if err != nil {
+		panic(err)
+	}
+	if state == nil {
+		panic("Unexpected nil")
+	}
+	return state
 }
 
 func max(a, b int) int {

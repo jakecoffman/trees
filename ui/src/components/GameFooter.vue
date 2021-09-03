@@ -13,9 +13,15 @@
     <div>
       <button @click="endTurn()">End Turn</button>
       <span v-if="tree && tree.Owner === you && !tree.IsDormant">
-        <button v-if="tree.Size >= 1" @click="seed(selection)">Seed</button>
+        <button v-if="tree.Size >= 1" @click="seed1(selection)">Seed</button>
         <button v-if="tree.Size < 3" @click="grow(selection)">Grow</button>
         <button v-if="tree.Size === 3" @click="sell(selection)">Sell</button>
+      </span>
+      <span v-if="!tree && seedSource">
+        <button @click="seed2(selection)">Seed Here</button>
+      </span>
+      <span v-if="seedSource">
+        <button @click="seedSource = null">Cancel Seed</button>
       </span>
     </div>
   </footer>
@@ -24,6 +30,11 @@
 export default {
   props: ['game', 'selection', 'you'],
   inject: ['ws', 'conn'],
+  data() {
+    return {
+      seedSource: null
+    }
+  },
   computed: {
     cell() {
       if (!this.selection) {
@@ -42,9 +53,12 @@ export default {
     endTurn() {
       this.ws.value.send(JSON.stringify({Kind: 'end'}))
     },
-    seed(selection) {
-      // todo: how to select destination?
-      this.ws.value.send(JSON.stringify({Kind: 'seed', Source: selection}))
+    seed1(selection) {
+      this.seedSource = selection
+    },
+    seed2(selection) {
+      this.ws.value.send(JSON.stringify({Kind: 'seed', Source: this.seedSource, Target: selection}))
+      this.seedSource = null
     },
     sell(selection) {
       this.ws.value.send(JSON.stringify({Kind: 'sell', Target: selection}))
