@@ -2,24 +2,17 @@
   <g class="cell" @click="cellClick">
     <polygon points="100,0 50,-87 -50,-87 -100,-0 -50,87 50,87" :class="polyClass"></polygon>
     <text class="xyz"></text>
-    <image v-if="href"
-        transform="rotate(30)"
-        :x="offsetX"
-        :y="offsetY"
-        :width="size"
-        :height="size"
-        :style="`filter: sepia(100%) saturate(300%) brightness(100%) ${tree?.Owner ? 'hue-rotate(180deg)' : 'hue-rotate(0deg)'};`"
-        :href="href" />
-    <text v-if="tree?.IsDormant">ZZZ</text>
+    <image v-if="href" transform="rotate(30)" :x="offsetX" :y="offsetY" :width="size" :height="size" :class="{bluePlayer: tree?.Owner, orangePlayer: !tree?.Owner}" :href="href" />
+    <text v-if="tree?.IsDormant" transform="rotate(30) translate(-50, 30)" style="font-size: 72pt">💤</text>
     <g v-if="debug">
       <text transform="rotate(-90) translate(60, 0) rotate(90) rotate(30) translate(0,10)" class="q-coord">
-        {{x}}
+        {{hex.x}}
       </text>
       <text transform="rotate(-90) translate(-30, -52) rotate(90) rotate(30) translate(0,10)" class="s-coord">
-        {{y}}
+        {{hex.y}}
       </text>
       <text transform="rotate(-90) translate(-30, 52) rotate(90) rotate(30) translate(0,10)" class="r-coord">
-        {{z}}
+        {{hex.z}}
       </text>
       <text transform="rotate(30)" style="stroke: red;">
         {{index}}
@@ -29,7 +22,7 @@
 </template>
 <script>
 export default {
-  props: ['x', 'y', 'z', 'index', 'debug', 'tree', 'cell', 'you', 'selection'],
+  props: ['hex', 'index', 'debug', 'tree', 'cell', 'you', 'selection'],
   computed: {
     polyClass() {
       if (this.selection === this.index) {
@@ -110,5 +103,11 @@ export default {
 }
 .richHigh {
   fill: green;
+}
+.bluePlayer {
+  filter: sepia(100%) saturate(300%) brightness(100%) hue-rotate(180deg);
+}
+.orangePlayer {
+  filter: sepia(100%) saturate(300%) brightness(100%) hue-rotate(0deg);
 }
 </style>
