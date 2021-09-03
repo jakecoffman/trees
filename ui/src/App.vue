@@ -11,6 +11,7 @@ body {
   margin: 0;
   background: black;
   color: white;
+  font-size: 16pt;
 }
 .orange {
   color: orange;
@@ -29,5 +30,11 @@ body {
 }
 .grow {
   flex-grow: 1;
+}
+button {
+  background: white;
+  border: 1px solid black;
+  font-size: 16pt;
+  padding: .25rem 1rem;
 }
 </style>

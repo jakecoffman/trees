@@ -1,6 +1,5 @@
 <template>
   <footer>
-    Day {{game.State.Day}} Nutrients {{game.State.Nutrients}} Room {{game.Code}}
     <span v-if="conn.value !== 'Open'">Connection {{conn}}</span>
 
     <div v-if="selection">
