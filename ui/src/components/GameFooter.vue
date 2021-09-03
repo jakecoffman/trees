@@ -4,11 +4,7 @@
     <span v-if="conn.value !== 'Open'">Connection {{conn}}</span>
 
     <div v-if="selection">
-      <span v-if="cell">Richness: {{cell.Richness}} &nbsp;</span>
-      <span v-if="tree">
-        <span>{{tree.Owner === you ? 'Your' : `Opponent's`}} Tree: Size {{tree.Size}}</span>
-        <span v-if="tree.IsDormant">Dormant</span>
-      </span>
+      {{richnessText}} {{treeText}}
     </div>
     <div>
       <button @click="endTurn()">End Turn</button>
@@ -17,7 +13,7 @@
         <button v-if="tree.Size < 3" @click="grow(selection)">Grow</button>
         <button v-if="tree.Size === 3" @click="sell(selection)">Sell</button>
       </span>
-      <span v-if="!tree && seedSource">
+      <span v-if="!tree && seedSource && cell.Richness > 0">
         <button @click="seed2(selection)">Seed Here</button>
       </span>
       <span v-if="seedSource">
@@ -47,6 +43,47 @@ export default {
         return null
       }
       return this.game.State.Trees[this.selection.toString()]
+    },
+    richnessText() {
+      if (!this.cell) {
+        return ''
+      }
+      switch (this.cell.Richness) {
+        case 0:
+          return 'Unusable'
+        case 2:
+          return 'Soil Bonus +1'
+        case 3:
+          return 'Soil Bonus +2'
+        default:
+          return ''
+      }
+    },
+    treeText() {
+      if (!this.tree) {
+        return ''
+      }
+      let text = ''
+      if (this.tree.Owner === this.you) {
+        text += 'Your '
+      } else {
+        text += `Opponent's `
+      }
+      if (this.tree.IsDormant) {
+        text += 'dormant '
+      }
+      switch (this.tree.Size) {
+        case 0:
+          return text + 'seed'
+        case 1:
+          return text + 'sprout'
+        case 2:
+          return text + 'sapling'
+        case 3:
+          return text + 'tree'
+        default:
+          return text + '???'
+      }
     }
   },
   methods: {
