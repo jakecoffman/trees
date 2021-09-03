@@ -1,5 +1,8 @@
 <template>
   <footer>
+    Day {{game.State.Day}} Nutrients {{game.State.Nutrients}} Room {{game.Code}}
+    <span v-if="conn.value !== 'Open'">Connection {{conn}}</span>
+
     <div v-if="selection">
       <span v-if="cell">Richness: {{cell.Richness}} &nbsp;</span>
       <span v-if="tree">
@@ -20,7 +23,7 @@
 <script>
 export default {
   props: ['game', 'selection', 'you'],
-  inject: ['ws'],
+  inject: ['ws', 'conn'],
   computed: {
     cell() {
       if (!this.selection) {
@@ -54,11 +57,11 @@ export default {
 </script>
 <style scoped>
 footer {
-  position: fixed;
-  bottom: 0;
-  width: 100vw;
-  height: 4rem;
-  background: black;
+  /*position: fixed;*/
+  /*bottom: 0;*/
+  /*width: 100vw;*/
+  /*height: 4rem;*/
+  /*background: black;*/
 
   display: flex;
   gap: .5rem;

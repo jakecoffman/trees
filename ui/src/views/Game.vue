@@ -1,6 +1,6 @@
 <template>
   <section>
-    <game-header :game="game" :conn="conn" :you="you"/>
+    <game-header :game="game" :you="you"/>
     <hex-grid v-if="game" :game="game" :you="you" :selection="selection" class="hex-grid" @select="select"/>
     <game-footer v-if="game" :game="game" :selection="selection" :you="you"></game-footer>
     <modal v-if="game && game.Players.length !== 2">
@@ -36,7 +36,8 @@ export default {
   },
   provide() {
     return {
-      ws: computed(() => this.ws)
+      ws: computed(() => this.ws),
+      conn: computed(() => this.conn)
     }
   },
   async mounted() {
@@ -114,7 +115,4 @@ export default {
 }
 </script>
 <style scoped>
-.hex-grid {
-  padding-bottom: 3rem;
-}
 </style>
