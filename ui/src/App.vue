@@ -15,8 +15,14 @@ body {
 .orange {
   color: orange;
 }
+.orange-bg {
+  background: orange;
+}
 .blue {
   color: #8fa2ff;
+}
+.blue-bg {
+  background: #8fa2ff;
 }
 .flex {
   display: flex;

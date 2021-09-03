@@ -1,5 +1,5 @@
 <template>
-  <section class="game">
+  <section class="game" :class="{'blue-bg': !you, 'orange-bg': you}">
     <svg class="board" viewBox="-610 -560 1220 1115">
       <g transform="rotate(-30)" fill="white" stroke="black">
         <g class="grid" id="grid">
@@ -44,7 +44,6 @@ export default {
 </script>
 <style scoped>
 .game {
-  background: white;
   display: flex;
   flex-direction: column;
   align-items: center;
