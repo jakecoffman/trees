@@ -7,22 +7,31 @@
       {{richnessText}} {{treeText}}
     </div>
     <div>
-      <button @click="endTurn()">End Turn</button>
-      <span v-if="tree && tree.Owner === you && !tree.IsDormant">
-        <button v-if="tree.Size >= 1" @click="seed1(selection)">Seed</button>
-        <button v-if="tree.Size < 3" @click="grow(selection)">Grow</button>
-        <button v-if="tree.Size === 3" @click="sell(selection)">Sell</button>
+      <button @click="endTurn()" v-if="!seedSource">End Turn</button>
+      <span v-if="tree && tree.Owner === you && !tree.IsDormant && !seedSource">
+        <button v-if="tree.Size >= 1" @click="seed1(selection)" :disabled="seedCost > game.State.Energy[you]">
+          Seed (Cost {{seedCost}})
+        </button>
+        <button v-if="tree.Size < 3" @click="grow(selection)" :disabled="growthCost > game.State.Energy[you]">
+          Grow (Cost {{growthCost}})
+        </button>
+        <button v-if="tree.Size === 3" @click="sell(selection)" :disabled="growthCost > game.State.Energy[you]">
+          Sell (Cost {{growthCost}})
+        </button>
       </span>
-      <span v-if="!tree && seedSource && cell.Richness > 0">
+      <span v-if="!tree && seedSource && cell?.Richness > 0">
         <button @click="seed2(selection)">Seed Here</button>
       </span>
-      <span v-if="seedSource">
+      <div v-if="seedSource">
+        <p>Select a location to seed</p>
         <button @click="seedSource = null">Cancel Seed</button>
-      </span>
+      </div>
     </div>
   </footer>
 </template>
 <script>
+import {growthCost, seedCost} from "../assets/cost";
+
 export default {
   props: ['game', 'selection', 'you'],
   inject: ['ws', 'conn'],
@@ -84,6 +93,15 @@ export default {
         default:
           return text + '???'
       }
+    },
+    growthCost() {
+      if (!this.tree) {
+        return 0
+      }
+      return growthCost(this.you, this.game.State, this.tree)
+    },
+    seedCost() {
+      return seedCost(this.you, this.game.State)
     }
   },
   methods: {
