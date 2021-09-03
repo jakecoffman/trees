@@ -70,6 +70,7 @@ func Handle(ws *lib.SafetySocket, r *http.Request) {
 			room.Join(player)
 		} else {
 			player.Room.Rejoin(player)
+			room = player.Room
 			str += " rejoined"
 		}
 		log.Println(str)
