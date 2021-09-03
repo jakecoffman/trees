@@ -87,11 +87,11 @@ func (r *Room) CastSeed(player *Player, source, target int) {
 }
 
 func (r *Room) SellTree(player *Player, index int) {
-	r.input <- Cmd{Kind: CmdSell, Player: player, Src: index}
+	r.input <- Cmd{Kind: CmdSell, Player: player, Tgt: index}
 }
 
 func (r *Room) GrowTree(player *Player, index int) {
-	r.input <- Cmd{Kind: CmdGrow, Player: player, Src: index}
+	r.input <- Cmd{Kind: CmdGrow, Player: player, Tgt: index}
 }
 
 func (r *Room) EndTurn(player *Player) {
@@ -106,8 +106,16 @@ func (r *Room) loop() {
 			log.Println("BOTH PLAYERS ENTERED A MOVE")
 			// both players have entered a move, execute them "simultaneously"
 
-			moves[0] = nil
-			moves[1] = nil
+			r.applyMoves(moves)
+
+			if moves[0].Type == game.Wait && moves[1].Type == game.Wait {
+				moves[0] = nil
+				moves[1] = nil
+			} else if moves[0].Type != game.Wait {
+				moves[0] = nil
+			} else if moves[1].Type != game.Wait {
+				moves[1] = nil
+			}
 			// update everyone
 			r.sendAllGame()
 		}
@@ -125,27 +133,95 @@ func (r *Room) loop() {
 				r.sendAllGame()
 			default:
 				var move *game.Action
+				var playerIndex int
+
+				if cmd.Player == r.Players[0] {
+					playerIndex = 0
+				} else {
+					playerIndex = 1
+				}
 
 				if cmd.Kind == CmdEnd {
 					move = &game.Action{Type: game.Wait}
 				} else if cmd.Kind == CmdSell {
-					move = &game.Action{Type: game.Complete, SourceCellIdx: cmd.Src}
+					move = &game.Action{Type: game.Complete, TargetCellIdx: cmd.Tgt}
+					_, err := r.State.ApplyComplete(playerIndex, move)
+					if err != nil {
+						SendMsg(cmd.Player.ws, err.Error())
+						continue
+					}
 				} else if cmd.Kind == CmdSeed {
 					move = &game.Action{Type: game.Seed, SourceCellIdx: cmd.Src, TargetCellIdx: cmd.Tgt}
+					_, err := r.State.ApplySeed(playerIndex, move)
+					if err != nil {
+						SendMsg(cmd.Player.ws, err.Error())
+						continue
+					}
 				} else if cmd.Kind == CmdGrow {
-					move = &game.Action{Type: game.Grow, SourceCellIdx: cmd.Src}
+					log.Println("PLAYER", playerIndex, "GROW", cmd.Src)
+					move = &game.Action{Type: game.Grow, TargetCellIdx: cmd.Tgt}
+					_, err := r.State.ApplyGrow(playerIndex, move)
+					if err != nil {
+						SendMsg(cmd.Player.ws, err.Error())
+						continue
+					}
 				}
 
-				if cmd.Player == r.Players[0] {
-					log.Println(r.Code, "PLAYER 0", move.String())
-					moves[0] = move
-				} else {
-					log.Println(r.Code, "PLAYER 1", move.String())
-					moves[1] = move
-				}
+				log.Println(r.Code, "PLAYER", playerIndex, move.String())
+				moves[playerIndex] = move
 			}
 		}
 	}
+}
+
+func (r *Room) applyMoves(moves [2]*game.Action) {
+	state := r.State
+
+	if moves[0].Type == game.Seed && moves[1].Type == game.Seed {
+		if moves[0].TargetCellIdx == moves[1].TargetCellIdx {
+			// seed is not planted, refund sun, make source trees dormant
+			state.Trees[moves[0].SourceCellIdx].IsDormant = true
+			state.Trees[moves[1].SourceCellIdx].IsDormant = true
+			// TODO refund sun?
+			return
+		}
+	}
+
+	if moves[0].Type == game.Wait && moves[1].Type == game.Wait {
+		state.Sun = state.Sun.Move()
+		state = state.GatherSun()
+	}
+	if moves[0].Type == game.Seed {
+		state, _ = state.ApplySeed(0, moves[0])
+	}
+	if moves[1].Type == game.Seed {
+		state, _ = state.ApplySeed(1, moves[1])
+	}
+	var nutrientsLost int
+	if moves[0].Type == game.Complete {
+		nutrientsLost++
+		state, _ = state.ApplyComplete(0, moves[0])
+	}
+	if moves[1].Type == game.Complete {
+		nutrientsLost++
+		state, _ = state.ApplyComplete(1, moves[1])
+	}
+	state.Nutrients = max(0, state.Nutrients-nutrientsLost)
+	if moves[0].Type == game.Grow {
+		state, _ = state.ApplyGrow(0, moves[0])
+	}
+	if moves[1].Type == game.Grow {
+		state, _ = state.ApplyGrow(1, moves[1])
+	}
+
+	r.State = state
+}
+
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
 }
 
 type Cmd struct {

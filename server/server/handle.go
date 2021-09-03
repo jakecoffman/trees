@@ -76,15 +76,16 @@ func Handle(ws *lib.SafetySocket, r *http.Request) {
 		if err := ws.ReadJSON(&msg); err != nil {
 			return
 		}
+		log.Printf("GOT MESSAGE FROM WS: %#v\n", msg)
 		switch msg.Kind {
 		case "end":
 			player.Room.EndTurn(player)
 		case "seed":
 			player.Room.CastSeed(player, msg.Source, msg.Target)
 		case "grow":
-			player.Room.GrowTree(player, msg.Source)
+			player.Room.GrowTree(player, msg.Target)
 		case "sell":
-			player.Room.SellTree(player, msg.Source)
+			player.Room.SellTree(player, msg.Target)
 		}
 	}
 }

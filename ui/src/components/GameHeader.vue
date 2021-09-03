@@ -15,7 +15,7 @@
       </span>
     <span>OPT</span>
     <span class="flex">
-      <span class="grow">Day {{game.State.Day}} Nutrients {{game.State.Nutrients}}</span>
+      <span class="grow">Day {{game.State.Day}} Nutrients {{game.State.Nutrients}} Room {{game.Code}}</span>
       <span v-if="conn !== 'Open'">Connection {{conn}}</span>
     </span>
   </header>

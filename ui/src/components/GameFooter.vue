@@ -44,10 +44,10 @@ export default {
       this.ws.value.send(JSON.stringify({Kind: 'seed', Source: selection}))
     },
     sell(selection) {
-      this.ws.value.send(JSON.stringify({Kind: 'sell', Source: selection}))
+      this.ws.value.send(JSON.stringify({Kind: 'sell', Target: selection}))
     },
     grow(selection) {
-      this.ws.value.send(JSON.stringify({Kind: 'grow', Source: selection}))
+      this.ws.value.send(JSON.stringify({Kind: 'grow', Target: selection}))
     }
   }
 }

@@ -5,14 +5,14 @@ import (
 	"math/rand"
 )
 
-func (state *State) InitStartingTrees() {
-	startingCoords := state.Board.Edges()
+func (s *State) InitStartingTrees() {
+	startingCoords := s.Board.Edges()
 
 	// remove if richness is null
 	{
 		var dedupeStartingCoords []Coord
 		for _, c := range startingCoords {
-			if state.Board.Map[c].Richness != RichnessUnusable {
+			if s.Board.Map[c].Richness != RichnessUnusable {
 				dedupeStartingCoords = append(dedupeStartingCoords, c)
 			}
 		}
@@ -27,11 +27,11 @@ func (state *State) InitStartingTrees() {
 	}
 
 	// this is done in New but done here just in case it gets called again?
-	state.Trees = map[int]*Tree{}
+	s.Trees = map[int]*Tree{}
 	for i := 0; i < startingTreeCount; i++ {
 		{
-			cell := state.Board.Map[validCoords[2*i]]
-			state.Trees[cell.Index] = &Tree{
+			cell := s.Board.Map[validCoords[2*i]]
+			s.Trees[cell.Index] = &Tree{
 				CellIndex: cell.Index,
 				Size:      SizeSmall,
 				Owner:     0,
@@ -39,8 +39,8 @@ func (state *State) InitStartingTrees() {
 			}
 		}
 		{
-			cell := state.Board.Map[validCoords[2*i+1]]
-			state.Trees[cell.Index] = &Tree{
+			cell := s.Board.Map[validCoords[2*i+1]]
+			s.Trees[cell.Index] = &Tree{
 				CellIndex: cell.Index,
 				Size:      SizeSmall,
 				Owner:     1,
@@ -88,31 +88,31 @@ func tryInitStartingTrees(startingCoords []Coord) []Coord {
 const maxEmptyCells = 10
 
 // RandomizeBoard adds unused cells
-func (state *State) RandomizeBoard() {
+func (s *State) RandomizeBoard() {
 	// reset all cells to the proper richness
-	for coord, cell := range state.Board.Map {
-		cell.Neighbors = state.Board.GetNeighborIds(coord)
-		state.Board.Cells[cell.Index] = cell
-		state.Board.Map[coord] = cell
+	for coord, cell := range s.Board.Map {
+		cell.Neighbors = s.Board.GetNeighborIds(coord)
+		s.Board.Cells[cell.Index] = cell
+		s.Board.Map[coord] = cell
 	}
 
 	wantedEmptyCells := rand.Intn(maxEmptyCells + 1)
 	actuallyEmptyCells := 0
 	for actuallyEmptyCells < wantedEmptyCells-1 {
-		index := rand.Intn(len(state.Board.Map))
-		randCoord := state.Board.Coords[index]
-		if state.Board.Map[randCoord].Richness != RichnessUnusable {
-			cell := state.Board.Map[randCoord]
+		index := rand.Intn(len(s.Board.Map))
+		randCoord := s.Board.Coords[index]
+		if s.Board.Map[randCoord].Richness != RichnessUnusable {
+			cell := s.Board.Map[randCoord]
 			cell.Richness = RichnessUnusable
-			state.Board.Map[randCoord] = cell
-			state.Board.Cells[cell.Index].Richness = RichnessUnusable
+			s.Board.Map[randCoord] = cell
+			s.Board.Cells[cell.Index].Richness = RichnessUnusable
 			actuallyEmptyCells++
 			if randCoord != randCoord.Opposite() {
-				cell := state.Board.Map[randCoord]
+				cell := s.Board.Map[randCoord]
 				cell.Richness = RichnessUnusable
-				state.Board.Map[randCoord] = cell
+				s.Board.Map[randCoord] = cell
 				actuallyEmptyCells++
-				state.Board.Cells[cell.Index].Richness = RichnessUnusable
+				s.Board.Cells[cell.Index].Richness = RichnessUnusable
 			}
 		}
 	}
@@ -124,7 +124,8 @@ func IsSet(v uint64, n int) bool {
 }
 
 // GatherSun calculates shadows and adds energy to players
-func (state *State) GatherSun() {
+func (s *State) GatherSun() *State {
+	state := s.Clone()
 	state.Shadows = state.Sun.CalculateShadows(state)
 	for i := range state.Trees {
 		tree := state.Trees[i]
@@ -139,6 +140,7 @@ func (state *State) GatherSun() {
 			}
 		}
 	}
+	return state
 }
 
 var treeBaseCost = []int{0, 1, 3, 7}
@@ -150,31 +152,33 @@ const (
 )
 
 // ApplyGrow makes player grow a tree
-func (state *State) ApplyGrow(player int, action Action) error {
+func (s *State) ApplyGrow(player int, action *Action) (*State, error) {
+	state := s.Clone()
+
 	cell := state.Board.Cells[action.TargetCellIdx]
 	tree, ok := state.Trees[cell.Index]
 	if !ok {
-		return fmt.Errorf("tree not found at %v", cell.Index)
+		return nil, fmt.Errorf("tree not found at %v", cell.Index)
 	}
 	if player != tree.Owner {
-		return fmt.Errorf("tree at %v not owned by player %v", tree.CellIndex, player)
+		return nil, fmt.Errorf("tree at %v not owned by player %v", tree.CellIndex, player)
 	}
 	if tree.IsDormant {
-		return fmt.Errorf("tree at %v is dormant", cell.Index)
+		return nil, fmt.Errorf("tree at %v is dormant", cell.Index)
 	}
 	if tree.Size >= SizeLarge {
-		return fmt.Errorf("tree at %v is too large to grow", cell.Index)
+		return nil, fmt.Errorf("tree at %v is too large to grow", cell.Index)
 	}
 	cost := growthCost(player, state, tree)
 	sun := state.Energy[player]
 	if sun < cost {
-		return fmt.Errorf("player %v can't afford to grow tree at %v: they have %v but need %v", player, cell.Index, sun, cost)
+		return nil, fmt.Errorf("player %v can't afford to grow tree at %v: they have %v but need %v", player, cell.Index, sun, cost)
 	}
 
 	state.Energy[player] = sun - cost
 	state.Trees[cell.Index].Size++
 	state.Trees[cell.Index].IsDormant = true
-	return nil
+	return state, nil
 }
 
 func growthCost(player int, state *State, tree *Tree) int {
@@ -198,26 +202,28 @@ func cost(player int, size int, state *State) int {
 }
 
 // ApplyComplete completes a tree
-func ApplyComplete(player int, state *State, action Action) error {
+func (s *State) ApplyComplete(player int, action *Action) (*State, error) {
+	state := s.Clone()
+
 	//coord := board.Coords[action.TargetCellIdx]
 	cell := state.Board.Cells[action.TargetCellIdx]
 	tree, ok := state.Trees[cell.Index]
 	if !ok {
-		return fmt.Errorf("tree at %v not found", cell.Index)
+		return nil, fmt.Errorf("tree at %v not found", cell.Index)
 	}
 	if player != tree.Owner {
-		return fmt.Errorf("tree at %v not owned by player %v", tree.CellIndex, player)
+		return nil, fmt.Errorf("tree at %v not owned by player %v", tree.CellIndex, player)
 	}
 	if tree.IsDormant {
-		return fmt.Errorf("tree at %v is dormant", cell.Index)
+		return nil, fmt.Errorf("tree at %v is dormant", cell.Index)
 	}
 	if tree.Size < SizeLarge {
-		return fmt.Errorf("tree at %v is too small to sell", cell.Index)
+		return nil, fmt.Errorf("tree at %v is too small to sell", cell.Index)
 	}
 	cost := growthCost(player, state, tree)
 	sun := state.Energy[player]
 	if sun < cost {
-		return fmt.Errorf("player %v can't afford to sell tree at %v: they have %v but need %v", player, cell.Index, sun, cost)
+		return nil, fmt.Errorf("player %v can't afford to sell tree at %v: they have %v but need %v", player, cell.Index, sun, cost)
 	}
 
 	state.Energy[player] = sun - cost
@@ -230,11 +236,12 @@ func ApplyComplete(player int, state *State, action Action) error {
 	}
 	state.Score[player] += points
 	delete(state.Trees, cell.Index)
-	return nil
+	return state, nil
 }
 
 // ApplySeed makes the player cast a seed
-func ApplySeed(player int, state *State, action Action) error {
+func (s *State) ApplySeed(player int, action *Action) (*State, error) {
+	state := s.Clone()
 	targetCoord := state.Board.Coords[action.TargetCellIdx]
 	sourceCoord := state.Board.Coords[action.SourceCellIdx]
 
@@ -242,34 +249,34 @@ func ApplySeed(player int, state *State, action Action) error {
 	sourceCell := state.Board.Cells[action.SourceCellIdx]
 
 	if _, ok := state.Trees[targetCell.Index]; ok {
-		return fmt.Errorf("target cell %v is not empty", targetCell.Index)
+		return nil, fmt.Errorf("target cell %v is not empty", targetCell.Index)
 	}
 	sourceTree := state.Trees[sourceCell.Index]
 	if sourceTree == nil {
-		return fmt.Errorf("no tree at source %v", sourceCell.Index)
+		return nil, fmt.Errorf("no tree at source %v", sourceCell.Index)
 	}
 	if sourceTree.Size == SizeSeed {
-		return fmt.Errorf("tree at %v is too small to seed", sourceCell.Index)
+		return nil, fmt.Errorf("tree at %v is too small to seed", sourceCell.Index)
 	}
 	if player != sourceTree.Owner {
-		return fmt.Errorf("tree %v is not owned by player %v", sourceCell.Index, player)
+		return nil, fmt.Errorf("tree %v is not owned by player %v", sourceCell.Index, player)
 	}
 	if sourceTree.IsDormant {
-		return fmt.Errorf("tree at %v is dormant", sourceCell.Index)
+		return nil, fmt.Errorf("tree at %v is dormant", sourceCell.Index)
 	}
 
 	distance := sourceCoord.DistanceTo(targetCoord)
 	if distance > sourceTree.Size {
-		return fmt.Errorf("tree at %v can't seed that far (%v spaces)", sourceCell.Index, distance)
+		return nil, fmt.Errorf("tree at %v can't seed that far (%v spaces)", sourceCell.Index, distance)
 	}
 	if targetCell.Richness == RichnessUnusable {
-		return fmt.Errorf("target cell %v is unusable", targetCell.Index)
+		return nil, fmt.Errorf("target cell %v is unusable", targetCell.Index)
 	}
 
 	costOfSeed := cost(player, SizeSeed, state)
 	sun := state.Energy[player]
 	if sun < costOfSeed {
-		return fmt.Errorf("player %v doesn't have enough energy to seed (%v/%v)", player, sun, costOfSeed)
+		return nil, fmt.Errorf("player %v doesn't have enough energy to seed (%v/%v)", player, sun, costOfSeed)
 	}
 	sourceTree.IsDormant = true
 	state.Energy[player] -= costOfSeed
@@ -280,5 +287,5 @@ func ApplySeed(player int, state *State, action Action) error {
 		IsDormant: true,
 	}
 	state.Trees[tree.CellIndex] = &tree
-	return nil
+	return state, nil
 }

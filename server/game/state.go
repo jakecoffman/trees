@@ -43,7 +43,31 @@ func New() *State {
 
 	s.RandomizeBoard()
 	s.InitStartingTrees()
-	s.GatherSun()
+	s = s.GatherSun()
 
 	return s
+}
+
+func (s *State) Clone() *State {
+	newState := &State{
+		Trees: map[int]*Tree{},
+	}
+
+	for k, v := range s.Trees {
+		tree := *v
+		newState.Trees[k] = &tree
+		if newState.Trees[k] == v {
+			panic("PROGRAMMER WRONG")
+		}
+	}
+
+	// Board never changes so we don't copy it
+	newState.Board = s.Board
+	newState.Sun = s.Sun
+	newState.Day = s.Day
+	newState.Nutrients = s.Nutrients
+	newState.Energy = []int{s.Energy[0], s.Energy[1]}
+	newState.Score = []int{s.Score[0], s.Score[1]}
+
+	return newState
 }
