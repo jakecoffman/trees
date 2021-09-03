@@ -42,7 +42,8 @@ func Handle(ws *lib.SafetySocket, r *http.Request) {
 		}
 		str += " new"
 		log.Println(str)
-		player.Room = arcade.NewRoom(player)
+		player.Room = arcade.NewRoom()
+		player.Room.Join(player)
 	case "join":
 		str := fmt.Sprint(playerId)
 		if player.Room != nil && player.Room.Code != code {
@@ -77,13 +78,13 @@ func Handle(ws *lib.SafetySocket, r *http.Request) {
 		}
 		switch msg.Kind {
 		case "end":
-			log.Println("GOT END")
+			player.Room.EndTurn(player)
 		case "seed":
-			log.Println("GOT SEED")
+			player.Room.CastSeed(player, msg.Source, msg.Target)
 		case "grow":
-			log.Println("GOT GROW")
+			player.Room.GrowTree(player, msg.Source)
 		case "sell":
-			log.Println("GOT SELL")
+			player.Room.SellTree(player, msg.Source)
 		}
 	}
 }

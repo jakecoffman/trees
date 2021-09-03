@@ -40,13 +40,14 @@ export default {
       this.ws.value.send(JSON.stringify({Kind: 'end'}))
     },
     seed(selection) {
-      this.ws.value.send(JSON.stringify({Kind: 'seed', Index: selection}))
+      // todo: how to select destination?
+      this.ws.value.send(JSON.stringify({Kind: 'seed', Source: selection}))
     },
     sell(selection) {
-      this.ws.value.send(JSON.stringify({Kind: 'sell', Index: selection}))
+      this.ws.value.send(JSON.stringify({Kind: 'sell', Source: selection}))
     },
     grow(selection) {
-      this.ws.value.send(JSON.stringify({Kind: 'grow', Index: selection}))
+      this.ws.value.send(JSON.stringify({Kind: 'grow', Source: selection}))
     }
   }
 }

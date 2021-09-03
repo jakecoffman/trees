@@ -5,48 +5,47 @@ import (
 	"log"
 )
 
-//
-//const (
-//	CmdJoin = iota + 1
-//	CmdQuit
-//	CmdEnd
-//	CmdSeed
-//	CmdGrow
-//	CmdSell
-//)
+const (
+	CmdJoin = iota + 1
+	CmdRejoin
+	CmdQuit
+	CmdEnd
+	CmdSeed
+	CmdGrow
+	CmdSell
+)
 
 type Room struct {
-	Code       string
-	State      *game.State
-	Players    []*Player
-	Spectators []*Player
+	Code    string
+	State   *game.State
+	Players []*Player
 
-	input chan interface{}
+	input chan Cmd
 }
 
-func NewRoom(player *Player) *Room {
+func NewRoom() *Room {
 	g := &Room{
-		Code:       EncodeToString(6),
-		State:      game.New(),
-		Players:    []*Player{player},
-		Spectators: []*Player{},
-		input:      make(chan interface{}),
+		Code:  EncodeToString(6),
+		State: game.New(),
+		input: make(chan Cmd),
 	}
 	Building.CreateGame(g)
+	log.Println("New room created", g.Code)
 	go g.loop()
 	return g
 }
 
 type PlayerMessage struct {
-	Kind  string
-	Value string `json:",omitempty"`
-	Room  *Room  `json:",omitempty"`
-	You   int
+	Kind   string
+	Value  string `json:",omitempty"`
+	Source int    `json:",omitempty"`
+	Target int    `json:",omitempty"`
+	Room   *Room  `json:",omitempty"`
+	You    int
 }
 
 func (r *Room) sendAllGame() {
-	arr := append(r.Players, r.Spectators...)
-	for i, p := range arr {
+	for i, p := range r.Players {
 		if p.ws != nil {
 			if err := p.ws.WriteJSON(PlayerMessage{
 				Kind: "room",
@@ -61,8 +60,7 @@ func (r *Room) sendAllGame() {
 }
 
 func (r *Room) sendAll(msg PlayerMessage) {
-	arr := append(r.Players, r.Spectators...)
-	for _, p := range arr {
+	for _, p := range r.Players {
 		if p.ws != nil {
 			if err := p.ws.WriteJSON(msg); err != nil {
 				log.Println(err)
@@ -72,61 +70,102 @@ func (r *Room) sendAll(msg PlayerMessage) {
 	}
 }
 
-func (r *Room) Command(cmd interface{}) {
-	r.input <- cmd
-}
-
 func (r *Room) Join(joiner *Player) {
-	r.input <- CmdJoin{joiner}
+	r.input <- Cmd{Kind: CmdJoin, Player: joiner}
 }
 
 func (r *Room) Rejoin(player *Player) {
-	r.input <- CmdRejoin{player}
+	r.input <- Cmd{Kind: CmdRejoin, Player: player}
 }
 
 func (r *Room) Quit(quitter *Player) {
-	r.input <- CmdQuit{quitter}
+	r.input <- Cmd{Kind: CmdQuit, Player: quitter}
+}
+
+func (r *Room) CastSeed(player *Player, source, target int) {
+	r.input <- Cmd{Kind: CmdSeed, Player: player, Src: source, Tgt: target}
+}
+
+func (r *Room) SellTree(player *Player, index int) {
+	r.input <- Cmd{Kind: CmdSell, Player: player, Src: index}
+}
+
+func (r *Room) GrowTree(player *Player, index int) {
+	r.input <- Cmd{Kind: CmdGrow, Player: player, Src: index}
+}
+
+func (r *Room) EndTurn(player *Player) {
+	r.input <- Cmd{Kind: CmdEnd, Player: player}
 }
 
 func (r *Room) loop() {
-	for {
-		r.sendAllGame()
+	var moves [2]*game.Action
 
+	for {
+		if moves[0] != nil && moves[1] != nil {
+			log.Println("BOTH PLAYERS ENTERED A MOVE")
+			// both players have entered a move, execute them "simultaneously"
+
+			moves[0] = nil
+			moves[1] = nil
+			// update everyone
+			r.sendAllGame()
+		}
 		select {
 		case cmd := <-r.input:
-			switch c := cmd.(type) {
+			switch cmd.Kind {
 			case CmdJoin:
-				r.join(c.Player)
+				r.join(cmd.Player)
+				r.sendAllGame()
+			case CmdRejoin:
+				r.sendAll(PlayerMessage{Kind: "msg", Value: "Player reconnected"})
+				r.sendAllGame()
 			case CmdQuit:
+				r.quit(cmd.Player)
+				r.sendAllGame()
+			default:
+				var move *game.Action
 
+				if cmd.Kind == CmdEnd {
+					move = &game.Action{Type: game.Wait}
+				} else if cmd.Kind == CmdSell {
+					move = &game.Action{Type: game.Complete, SourceCellIdx: cmd.Src}
+				} else if cmd.Kind == CmdSeed {
+					move = &game.Action{Type: game.Seed, SourceCellIdx: cmd.Src, TargetCellIdx: cmd.Tgt}
+				} else if cmd.Kind == CmdGrow {
+					move = &game.Action{Type: game.Grow, SourceCellIdx: cmd.Src}
+				}
+
+				if cmd.Player == r.Players[0] {
+					log.Println(r.Code, "PLAYER 0", move.String())
+					moves[0] = move
+				} else {
+					log.Println(r.Code, "PLAYER 1", move.String())
+					moves[1] = move
+				}
 			}
 		}
 	}
 }
 
-type CmdJoin struct {
+type Cmd struct {
+	Kind   int
 	Player *Player
-}
-
-type CmdRejoin struct {
-	Player *Player
-}
-
-type CmdQuit struct {
-	Player *Player
+	Src    int
+	Tgt    int
 }
 
 func (r *Room) join(player *Player) {
 	if len(r.Players) == 2 {
-		r.Spectators = append(r.Spectators, player)
-	} else {
-		r.Players = append(r.Players, player)
+		log.Println(r.Code, "Room is full, someone tried to join")
+		return
 	}
+	if len(r.Players) == 1 && player == r.Players[0] {
+		log.Println(r.Code, "Room double join?")
+		return
+	}
+	r.Players = append(r.Players, player)
 	r.sendAll(PlayerMessage{Kind: "msg", Value: "Player connected"})
-}
-
-func (r *Room) rejoin(player *Player) {
-	r.sendAll(PlayerMessage{Kind: "msg", Value: "Player reconnected"})
 }
 
 func (r *Room) quit(quitter *Player) {
@@ -134,12 +173,6 @@ func (r *Room) quit(quitter *Player) {
 		if p == quitter {
 			r.sendAll(PlayerMessage{Kind: "msg", Value: "Player has quit"})
 			return
-		}
-	}
-	for i, p := range r.Spectators {
-		if p.id == quitter.id {
-			r.Spectators = append(r.Spectators[i:], r.Spectators[i+1:]...)
-			break
 		}
 	}
 	Building.Shut(r)

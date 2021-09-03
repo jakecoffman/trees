@@ -60,13 +60,11 @@ export default {
       params = `action=new`
     }
 
-    if (!this.ws) {
-      this.ws = new WebSocket(`ws://${location.host}/ws?${params}`)
-      this.ws.onopen = this.wsOpen
-      this.ws.onclose = this.wsClose
-      this.ws.onerror = this.wsError
-      this.ws.onmessage = this.wsMessage
-    }
+    this.ws = new WebSocket(`ws://${location.host}/ws?${params}`)
+    this.ws.onopen = this.wsOpen
+    this.ws.onclose = this.wsClose
+    this.ws.onerror = this.wsError
+    this.ws.onmessage = this.wsMessage
   },
   beforeUnmount() {
     try {

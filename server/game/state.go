@@ -41,9 +41,9 @@ func New() *State {
 		s.Board.Map[coord] = cell
 	}
 
-	randomizeBoard(s)
-	initStartingTrees(s)
-	gatherSun(s)
+	s.RandomizeBoard()
+	s.InitStartingTrees()
+	s.GatherSun()
 
 	return s
 }

@@ -5,7 +5,7 @@ import (
 	"math/rand"
 )
 
-func initStartingTrees(state *State) {
+func (state *State) InitStartingTrees() {
 	startingCoords := state.Board.Edges()
 
 	// remove if richness is null
@@ -87,8 +87,8 @@ func tryInitStartingTrees(startingCoords []Coord) []Coord {
 
 const maxEmptyCells = 10
 
-// this assumes you made a new board first
-func randomizeBoard(state *State) {
+// RandomizeBoard adds unused cells
+func (state *State) RandomizeBoard() {
 	// reset all cells to the proper richness
 	for coord, cell := range state.Board.Map {
 		cell.Neighbors = state.Board.GetNeighborIds(coord)
@@ -118,11 +118,13 @@ func randomizeBoard(state *State) {
 	}
 }
 
-func IsSet(v uint64, index int) bool {
-	return (v & 1 << index) > 0
+// IsSet returns true iff the nth bit of v is set
+func IsSet(v uint64, n int) bool {
+	return (v & 1 << n) > 0
 }
 
-func gatherSun(state *State) {
+// GatherSun calculates shadows and adds energy to players
+func (state *State) GatherSun() {
 	state.Shadows = state.Sun.CalculateShadows(state)
 	for i := range state.Trees {
 		tree := state.Trees[i]
@@ -147,7 +149,8 @@ const (
 	RichnessBonusHigh   = 4
 )
 
-func applyGrow(player int, state *State, action Action) error {
+// ApplyGrow makes player grow a tree
+func (state *State) ApplyGrow(player int, action Action) error {
 	cell := state.Board.Cells[action.TargetCellIdx]
 	tree, ok := state.Trees[cell.Index]
 	if !ok {
@@ -194,7 +197,8 @@ func cost(player int, size int, state *State) int {
 	return c
 }
 
-func applyComplete(player int, state *State, action Action) error {
+// ApplyComplete completes a tree
+func ApplyComplete(player int, state *State, action Action) error {
 	//coord := board.Coords[action.TargetCellIdx]
 	cell := state.Board.Cells[action.TargetCellIdx]
 	tree, ok := state.Trees[cell.Index]
@@ -229,7 +233,8 @@ func applyComplete(player int, state *State, action Action) error {
 	return nil
 }
 
-func applySeed(player int, state *State, action Action) error {
+// ApplySeed makes the player cast a seed
+func ApplySeed(player int, state *State, action Action) error {
 	targetCoord := state.Board.Coords[action.TargetCellIdx]
 	sourceCoord := state.Board.Coords[action.SourceCellIdx]
 
