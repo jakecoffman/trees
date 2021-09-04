@@ -7,12 +7,12 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:333',
+        target: 'http://127.0.0.1:8454',
         changeOrigin: true,
         rewrite: path => path.replace(/^\/api/, '')
       },
       '/ws': {
-        target: 'ws://127.0.0.1:8333',
+        target: 'ws://127.0.0.1:8454',
         changeOrigin: true,
         websocket: true,
         ws: true
