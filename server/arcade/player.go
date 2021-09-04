@@ -23,6 +23,15 @@ func (p *Player) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (p *Player) Unlock() {
+	if p.ws != nil {
+		if err := p.ws.WriteJSON(PlayerMessage{Kind: "unlock"}); err != nil {
+			log.Println(err)
+			return
+		}
+	}
+}
+
 func SendMsg(ws *lib.SafetySocket, text string) {
 	msg := PlayerMessage{
 		Kind:  "msg",

@@ -7,13 +7,13 @@
     </div>
     <div v-if="game.State.Day < 27" class="buttons">
       <span v-if="tree && tree.Owner === you && !tree.IsDormant && !seedSource">
-        <button v-if="tree.Size >= 1" @click="seed1(selection)" :disabled="seedCost > game.State.Energy[you]">
+        <button v-if="tree.Size >= 1" @click="seed1(selection)" :disabled="locked || seedCost > game.State.Energy[you]">
           Seed (Cost {{seedCost}})
         </button>
-        <button v-if="tree.Size < 3" @click="grow(selection)" :disabled="growthCost > game.State.Energy[you]">
+        <button v-if="tree.Size < 3" @click="grow(selection)" :disabled="locked || growthCost > game.State.Energy[you]">
           Grow (Cost {{growthCost}})
         </button>
-        <button v-if="tree.Size === 3" @click="sell(selection)" :disabled="growthCost > game.State.Energy[you]">
+        <button v-if="tree.Size === 3" @click="sell(selection)" :disabled="locked || growthCost > game.State.Energy[you]">
           Sell (Cost {{growthCost}})
         </button>
       </span>
@@ -24,7 +24,7 @@
         <p v-if="tree || cell?.Richness === 0">Select a location to seed</p>
         <button @click="seedSource = null">Cancel Seed</button>
       </div>
-      <button @click="endTurn()" v-if="!seedSource">End Turn</button>
+      <button @click="endTurn()" v-if="!seedSource" :disabled="locked">End Turn</button>
     </div>
     <span v-else>
       <span v-if="game.State.Score[0] === game.State.Score[1]">Tie Game!</span>
@@ -41,7 +41,8 @@ export default {
   inject: ['ws', 'conn'],
   data() {
     return {
-      seedSource: null
+      seedSource: null,
+      locked: false
     }
   },
   computed: {
@@ -110,20 +111,27 @@ export default {
   },
   methods: {
     endTurn() {
+      this.locked = true
       this.ws.value.send(JSON.stringify({Kind: 'end'}))
     },
     seed1(selection) {
       this.seedSource = selection
     },
     seed2(selection) {
+      this.locked = true
       this.ws.value.send(JSON.stringify({Kind: 'seed', Source: this.seedSource, Target: selection}))
       this.seedSource = null
     },
     sell(selection) {
+      this.locked = true
       this.ws.value.send(JSON.stringify({Kind: 'sell', Target: selection}))
     },
     grow(selection) {
+      this.locked = true
       this.ws.value.send(JSON.stringify({Kind: 'grow', Target: selection}))
+    },
+    unlock() {
+      this.locked = false
     }
   }
 }

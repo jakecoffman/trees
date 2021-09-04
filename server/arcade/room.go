@@ -116,47 +116,10 @@ func (r *Room) loop() {
 	for {
 		if moves[0] != nil && moves[1] != nil {
 			// both players have entered a move, execute them "simultaneously"
-			r.applyMoves(moves)
-
-			if r.State.Day == maxDays {
-				r.State.Score[0] += r.State.Energy[0] / 3
-				r.State.Score[1] += r.State.Energy[1] / 3
-				r.sendAllGame()
-				var msg string
-				if r.State.Score[0] == r.State.Score[1] {
-					msg = "Tie!"
-				} else if r.State.Score[0] > r.State.Score[1] {
-					msg = "Orange wins!"
-				} else {
-					msg = "Blue wins!"
-				}
-				r.sendAll(PlayerMessage{
-					Kind:  "msg",
-					Value: msg,
-				})
-				Building.Shut(r)
-				r.Players[0].Room = nil
-				r.Players[1].Room = nil
+			var isGameOver bool
+			if moves, isGameOver = r.execute(moves); isGameOver {
 				return
 			}
-
-			if r.State.Day == maxDays-1 {
-				r.sendAll(PlayerMessage{Kind: "msg", Value: "Final turn!"})
-			}
-
-			if moves[0].Type == game.Wait && moves[1].Type == game.Wait {
-				moves[0] = nil
-				moves[1] = nil
-			} else {
-				if moves[0].Type != game.Wait {
-					moves[0] = nil
-				}
-				if moves[1].Type != game.Wait {
-					moves[1] = nil
-				}
-			}
-			// update everyone
-			r.sendAllGame()
 		}
 		select {
 		case cmd := <-r.input:
@@ -188,6 +151,7 @@ func (r *Room) loop() {
 					_, err := r.State.ApplyComplete(playerIndex, move)
 					if err != nil {
 						SendMsg(cmd.Player.ws, err.Error())
+						cmd.Player.Unlock()
 						continue
 					}
 				} else if cmd.Kind == CmdSeed {
@@ -195,6 +159,7 @@ func (r *Room) loop() {
 					_, err := r.State.ApplySeed(playerIndex, move)
 					if err != nil {
 						SendMsg(cmd.Player.ws, err.Error())
+						cmd.Player.Unlock()
 						continue
 					}
 				} else if cmd.Kind == CmdGrow {
@@ -202,6 +167,7 @@ func (r *Room) loop() {
 					_, err := r.State.ApplyGrow(playerIndex, move)
 					if err != nil {
 						SendMsg(cmd.Player.ws, err.Error())
+						cmd.Player.Unlock()
 						continue
 					}
 				}
@@ -211,6 +177,59 @@ func (r *Room) loop() {
 			}
 		}
 	}
+}
+
+func (r *Room) execute(moves [2]*game.Action) ([2]*game.Action, bool) {
+	r.applyMoves(moves)
+
+	if r.State.Day == maxDays {
+		r.State.Score[0] += r.State.Energy[0] / 3
+		r.State.Score[1] += r.State.Energy[1] / 3
+		r.sendAllGame()
+		var msg string
+		if r.State.Score[0] == r.State.Score[1] {
+			msg = "Tie!"
+		} else if r.State.Score[0] > r.State.Score[1] {
+			msg = "Orange wins!"
+		} else {
+			msg = "Blue wins!"
+		}
+		r.sendAll(PlayerMessage{
+			Kind:  "msg",
+			Value: msg,
+		})
+		Building.Shut(r)
+		r.Players[0].Room = nil
+		r.Players[1].Room = nil
+		return [2]*game.Action{}, true
+	}
+
+	if r.State.Day == maxDays-1 {
+		r.sendAll(PlayerMessage{Kind: "msg", Value: "Final turn!"})
+	}
+
+	// if they are both wait, unlock them since the day has progressed
+	if moves[0].Type == game.Wait && moves[1].Type == game.Wait {
+		moves[0] = nil
+		moves[1] = nil
+		r.sendAll(PlayerMessage{Kind: "unlock"})
+		log.Println("BOTH WERE WAIT")
+	} else {
+		// otherwise unlock them if they did not wait, so the waiter keeps waiting
+		if moves[0].Type != game.Wait {
+			moves[0] = nil
+			r.Players[0].Unlock()
+			log.Println("P1 WAIT")
+		}
+		if moves[1].Type != game.Wait {
+			moves[1] = nil
+			r.Players[1].Unlock()
+			log.Println("P2 WAIT")
+		}
+	}
+	// update everyone
+	r.sendAllGame()
+	return moves, false
 }
 
 const maxDays = 26

@@ -2,7 +2,7 @@
   <section>
     <game-header :game="game" :you="you"/>
     <hex-grid v-if="game" :game="game" :you="you" :selection="selection" class="hex-grid" @select="select"/>
-    <game-footer v-if="game" :game="game" :selection="selection" :you="you"></game-footer>
+    <game-footer ref="foot" v-if="game" :game="game" :selection="selection" :you="you"></game-footer>
     <modal v-if="game && game.Players.length !== 2">
       <p>Waiting for opponent</p>
       <p>Room code {{game.Code}}</p>
@@ -87,6 +87,9 @@ export default {
       switch (data.Kind) {
         case "msg":
           createToast(data.Value, {type: 'danger', position: 'bottom-right'})
+          break
+        case "unlock":
+          this.$refs.foot.unlock()
           break
         case "room":
           console.log(data.Room)
