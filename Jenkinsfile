@@ -8,11 +8,13 @@ pipeline {
                 cd server
                 go build server.go
                 '''
-                sh '''
-                cd ui
-                npm ci
-                npm run build
-                '''
+                nodejs(nodeJSInstallationName: '13') {
+                    sh '''
+                    cd ui
+                    npm ci
+                    npm run build
+                    '''
+                }
             }
         }
         stage('Deploy') {
