@@ -17,6 +17,12 @@ var Building = bldg{
 	games:   map[string]*Room{},
 }
 
+func (b *bldg) GetPlayer(playerId string) *Player {
+	b.mutex.RLock()
+	defer b.mutex.RUnlock()
+	return b.players[playerId]
+}
+
 // Enter the player enters the Arcade
 func (b *bldg) Enter(playerId string, ws *lib.SafetySocket) *Player {
 	b.mutex.RLock()
@@ -58,14 +64,15 @@ func (b *bldg) CreateGame(g *Room) {
 func (b *bldg) Shut(r *Room) {
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
-
-	delete(b.games, r.Code)
+	if _, ok := b.games[r.Code]; ok {
+		delete(b.games, r.Code)
+	}
 }
 
-func (b *bldg) FindRoom(code string) (*Room, bool) {
+func (b *bldg) GetRoom(code string) *Room {
 	b.mutex.RLock()
 	defer b.mutex.RUnlock()
 
-	g, ok := b.games[code]
-	return g, ok
+	g := b.games[code]
+	return g
 }

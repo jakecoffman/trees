@@ -170,7 +170,7 @@ func (r *Room) loop() {
 			case CmdQuit:
 				r.quit(cmd.Player)
 				r.sendAllGame()
-				return
+				return // terminates the game loop
 			default:
 				var move *game.Action
 				var playerIndex int

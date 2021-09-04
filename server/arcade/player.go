@@ -7,8 +7,8 @@ import (
 )
 
 type Player struct {
-	id   string
-	Name string
+	id string
+	//Name string
 	ws   *lib.SafetySocket
 	Room *Room `json:"-"`
 }
@@ -18,7 +18,7 @@ func (p *Player) MarshalJSON() ([]byte, error) {
 		Name      string
 		Connected bool
 	}{
-		Name:      p.Name,
+		//Name:      p.Name,
 		Connected: p.ws != nil,
 	})
 }

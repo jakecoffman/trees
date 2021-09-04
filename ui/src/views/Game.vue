@@ -99,7 +99,7 @@ export default {
         case "room":
           console.log(data.Room)
           if (this.$route.params.id !== data.Room.Code) {
-            this.$router.replace(`/game/${data.Room.Code}`)
+            this.$router.replace(`/games/${data.Room.Code}`)
           }
           this.game = data.Room
           this.you = data.You

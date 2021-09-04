@@ -7,13 +7,17 @@
     </p>
     <ul>
       <li>
-        <router-link to="/rules">Read full rules</router-link>
+        <router-link to="/rules">
+          Read full rules
+        </router-link>
       </li>
       <li>
-        <router-link to="/game">Create New Multiplayer Game</router-link>
+        <router-link to="/games">
+          Create New Multiplayer Game
+        </router-link>
       </li>
       <li>
-        <button @click="join = true">Join Game</button>
+        <button @click="showJoinModal()">Join Game</button>
       </li>
       <li>
         Create New Game Against Bot (Coming Soon)
@@ -24,12 +28,27 @@
     </ul>
 
     <transition name="slide">
+      <modal v-if="existing">
+        <p>You are already in a game.</p>
+        <footer class="modal-footer">
+          <button @click="quit()">
+            Quit
+          </button>
+          <button @click="$router.push(`/games/${existing}`)">
+            Rejoin
+          </button>
+        </footer>
+      </modal>
+    </transition>
+
+    <transition name="slide">
       <modal v-if="join">
         <p>Enter the ID of the game</p>
-        <input type="number" v-model="code">
+        <input type="number" v-model="code" ref="codeEntry" :disabled="code.toString().length === 6">
         <footer class="modal-footer">
-          <button @click="join = false; code = ''">Cancel</button>
-          <button @click="$router.push(`/game/${code}`)" :disabled="code.toString().length !== 6">Join</button>
+          <button @click="join = false; code = ''">
+            Cancel
+          </button>
         </footer>
       </modal>
     </transition>
@@ -37,6 +56,7 @@
 </template>
 <script>
 import Modal from "../components/Modal.vue";
+import {createToast} from "mosha-vue-toastify";
 export default {
   components: {
     Modal
@@ -44,11 +64,49 @@ export default {
   data() {
     return {
       join: false,
-      code: ''
+      code: '',
+      existing: ''
     }
   },
-  created() {
-    fetch('/api/login')
+  watch: {
+    async code() {
+      if (this.code.toString().length === 6) {
+        const r = await fetch(`/api/rooms/${this.code}`)
+        if (!r.ok) {
+          createToast(`Room ${this.code} not found`, {type: 'danger', position: 'bottom-right'})
+          this.code = ''
+          await this.$nextTick(() => {
+            this.$refs.codeEntry.focus()
+          })
+          return
+        }
+        await this.$router.push(`/games/${this.code}`)
+      }
+    }
+  },
+  async created() {
+    const r = await fetch('/api/login')
+    if (!r.ok) {
+      return alert("Failed to login")
+    }
+    const me = await r.json()
+    this.existing = me.Code
+  },
+  methods: {
+    async quit() {
+      const r = await fetch(`/api/rooms/${this.existing}`, {method: 'DELETE'})
+      if (!r.ok) {
+        return alert("Failed to quit")
+      }
+      await r.text()
+      this.existing = ''
+    },
+    showJoinModal() {
+      this.join = true
+      this.$nextTick(() => {
+        this.$refs.codeEntry.focus()
+      })
+    }
   }
 }
 </script>

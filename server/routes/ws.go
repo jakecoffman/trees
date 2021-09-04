@@ -44,13 +44,7 @@ func wsPreHandler(c *gin.Context) {
 	}
 	log.Println(playerId, "Connected")
 
-	action := c.Query("action")
 	code := c.Query("code")
-	if action == "" {
-		c.String(401, "application/json", `{"error":"missing action query string"}`)
-		c.Abort()
-		return
-	}
 
 	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
@@ -60,10 +54,10 @@ func wsPreHandler(c *gin.Context) {
 	}
 	defer ws.Close()
 
-	wsHandler(lib.NewSafetySocket(ws), playerId, action, code)
+	wsHandler(lib.NewSafetySocket(ws), playerId, code)
 }
 
-func wsHandler(ws *lib.SafetySocket, playerId, action, code string) {
+func wsHandler(ws *lib.SafetySocket, playerId, code string) {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Println("Handler crashed:", r, string(debug.Stack()))
@@ -77,45 +71,28 @@ func wsHandler(ws *lib.SafetySocket, playerId, action, code string) {
 
 	var room *arcade.Room
 
-	// TODO move these into REST
-	switch action {
-	case "new":
-		str := fmt.Sprint(playerId)
-		if player.Room != nil {
-			// player is already in a room, leave it
-			str += " leaving"
-			player.Room.Quit(player)
-		}
-		str += " new"
-		log.Println(str)
-		room = arcade.NewRoom()
-		room.Join(player)
-	case "join":
-		str := fmt.Sprint(playerId)
-		if player.Room != nil && player.Room.Code != code {
-			str += " leaving"
-			player.Room.Quit(player)
-		}
-		if player.Room == nil {
-			var ok bool
-			room, ok = arcade.Building.FindRoom(code)
-			str += " fresh join"
-			if !ok {
-				arcade.SendMsg(ws, fmt.Sprintf("Code is wrong, or room is gone: %v", code))
-				return
-			}
-			room.Join(player)
-		} else {
-			player.Room.Rejoin(player)
-			room = player.Room
-			str += " rejoined"
-		}
-		log.Println(str)
-	default:
-		log.Println("Invalid/missing action:", action)
-		arcade.SendMsg(ws, "Invalid action: "+action)
-		return
+	str := fmt.Sprint(playerId)
+	// player has joined a different room, quit/forfeit current game
+	if player.Room != nil && player.Room.Code != code {
+		str += " leaving"
+		player.Room.Quit(player)
 	}
+	// player is joining fresh
+	if player.Room == nil {
+		room = arcade.Building.GetRoom(code)
+		str += " fresh join"
+		if room == nil {
+			arcade.SendMsg(ws, fmt.Sprintf("Code is wrong, or room is gone: %v", code))
+			return
+		}
+		room.Join(player)
+	} else {
+		// player is rejoining
+		player.Room.Rejoin(player)
+		room = player.Room
+		str += " rejoined"
+	}
+	log.Println(str)
 
 	for {
 		var msg arcade.PlayerMessage

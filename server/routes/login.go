@@ -4,17 +4,29 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/jakecoffman/crud"
+	"github.com/jakecoffman/trees/server/arcade"
 	"net/http"
 )
+
+var Login = crud.Spec{
+	Method:      "GET",
+	Path:        "/login",
+	Handler:     login,
+	Description: "If you're already logged in this just returns your user information",
+	Tags:        []string{"Login"},
+	Summary:     "Returns login info, or logs you in anonymously",
+	Validate:    crud.Validate{},
+}
 
 var oneYear = 60 * 60 * 24 * 256
 
 type loginResponse struct {
-	New bool
+	New  bool
+	Code string
 }
 
 func login(c *gin.Context) {
-	_, err := c.Cookie("player")
+	playerId, err := c.Cookie("player")
 	if err == http.ErrNoCookie {
 		playerId := uuid.New().String()
 		// TODO are these values good?
@@ -23,15 +35,10 @@ func login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, loginResponse{New: false})
-}
-
-var Login = crud.Spec{
-	Method:      "GET",
-	Path:        "/login",
-	Handler:     login,
-	Description: "",
-	Tags:        []string{"Login"},
-	Summary:     "Log in to the server",
-	Validate:    crud.Validate{},
+	response := loginResponse{New: false}
+	player := arcade.Building.GetPlayer(playerId)
+	if player != nil && player.Room != nil {
+		response.Code = player.Room.Code
+	}
+	c.JSON(200, response)
 }
