@@ -1,14 +1,69 @@
-package handlers
+package routes
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
+	"github.com/jakecoffman/crud"
 	"github.com/jakecoffman/trees/server/arcade"
 	"github.com/jakecoffman/trees/server/lib"
 	"log"
+	"net/http"
 	"runtime/debug"
 )
 
-func WsHandler(ws *lib.SafetySocket, playerId, action, code string) {
+var Ws = crud.Spec{
+	Method:      "GET",
+	Path:        "/ws",
+	Handler:     wsPreHandler,
+	Description: "",
+	Tags:        []string{"Play"},
+	Summary:     "Connect to a game",
+	Validate: crud.Validate{
+		Query: crud.Object(map[string]crud.Field{
+			"action": crud.String().Enum("new", "join").Description("Create a new game or join existing one"),
+			"code":   crud.String().Min(6).Max(6).Description("The game room code"),
+		}),
+	},
+}
+
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		// TODO
+		return true
+	},
+}
+
+func wsPreHandler(c *gin.Context) {
+	playerId, err := c.Cookie("player")
+	if err != nil {
+		log.Println("Player failed to connect:", err.Error())
+		c.String(401, "application/json", `{"error":"not logged in"}`)
+		c.Abort()
+		return
+	}
+	log.Println(playerId, "Connected")
+
+	action := c.Query("action")
+	code := c.Query("code")
+	if action == "" {
+		c.String(401, "application/json", `{"error":"missing action query string"}`)
+		c.Abort()
+		return
+	}
+
+	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		log.Println("upgrade error:", err)
+		c.Abort()
+		return
+	}
+	defer ws.Close()
+
+	wsHandler(lib.NewSafetySocket(ws), playerId, action, code)
+}
+
+func wsHandler(ws *lib.SafetySocket, playerId, action, code string) {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Println("Handler crashed:", r, string(debug.Stack()))

@@ -1,8 +1,9 @@
-package handlers
+package routes
 
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/jakecoffman/crud"
 	"net/http"
 )
 
@@ -12,7 +13,7 @@ type loginResponse struct {
 	New bool
 }
 
-func Login(c *gin.Context) {
+func login(c *gin.Context) {
 	_, err := c.Cookie("player")
 	if err == http.ErrNoCookie {
 		playerId := uuid.New().String()
@@ -23,4 +24,14 @@ func Login(c *gin.Context) {
 	}
 
 	c.JSON(200, loginResponse{New: false})
+}
+
+var Login = crud.Spec{
+	Method:      "GET",
+	Path:        "/login",
+	Handler:     login,
+	Description: "",
+	Tags:        []string{"Login"},
+	Summary:     "Log in to the server",
+	Validate:    crud.Validate{},
 }
