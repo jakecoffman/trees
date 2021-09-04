@@ -3,9 +3,14 @@
     <game-header :game="game" :you="you"/>
     <hex-grid v-if="game" :game="game" :you="you" :selection="selection" class="hex-grid" @select="select"/>
     <game-footer ref="foot" v-if="game" :game="game" :selection="selection" :you="you"></game-footer>
+
+    <div class="smokescreen" v-if="!game || game.Players.length !== 2 || conn !== 'Open'"></div>
     <modal v-if="game && game.Players.length !== 2">
       <p>Waiting for opponent</p>
       <p>Room code {{game.Code}}</p>
+    </modal>
+    <modal v-if="conn !== 'Open'">
+      {{conn}}
     </modal>
   </section>
 </template>
@@ -28,7 +33,7 @@ export default {
   data() {
     return {
       ws: null,
-      conn: 'Connecting',
+      conn: 'Connecting...',
       game: null,
       you: null,
       showFooter: false,
@@ -73,13 +78,12 @@ export default {
   methods: {
     wsOpen() {
       this.conn = 'Open'
-      console.log('open')
     },
     wsClose() {
-      this.conn = 'Closed'
+      this.conn = 'Connection closed'
     },
     wsError() {
-      this.conn = 'Error'
+      this.conn = 'Error on connection'
       createToast('WebSocket error', {type: 'danger', position: 'bottom-right'})
     },
     wsMessage(msg) {
@@ -113,4 +117,14 @@ export default {
 }
 </script>
 <style scoped>
+.smokescreen {
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 50%;
+  background: black;
+}
 </style>

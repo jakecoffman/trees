@@ -1,6 +1,6 @@
 <template>
   <footer>
-    <span v-if="conn.value !== 'Open'">Connection {{conn}}</span>
+    <img class="settings" src="/gear.svg" @click="openSettings = !openSettings">
 
     <div v-if="locked">Waiting for opponent's move</div>
     <div v-if="selection !== null && !seedSource">
@@ -32,18 +32,33 @@
       <span v-else-if="game.State.Score[0] > game.State.Score[1]">Orange Wins!</span>
       <span v-else>Blue Wins!</span>
     </span>
+
+    <modal v-if="openSettings" class="settingsModal">
+      <footer class="modal-footer">
+        <h3>Settings</h3>
+        <button @click="quit()">
+          Quit
+        </button>
+        <button @click="openSettings = false">
+          Close Settings
+        </button>
+      </footer>
+    </modal>
   </footer>
 </template>
 <script>
 import {growthCost, seedCost} from "../assets/cost";
+import Modal from "./Modal.vue";
 
 export default {
+  components: {Modal},
   props: ['game', 'selection', 'you'],
   inject: ['ws', 'conn'],
   data() {
     return {
       seedSource: null,
-      locked: false
+      locked: false,
+      openSettings: false
     }
   },
   computed: {
@@ -133,6 +148,10 @@ export default {
     },
     unlock() {
       this.locked = false
+    },
+    async quit() {
+      await fetch(`/api/rooms/${this.game.Room}`, {method: 'DELETE'})
+      await this.$router.push('/')
     }
   }
 }
@@ -163,5 +182,16 @@ footer {
 }
 .center {
   align-items: center;
+}
+.settings {
+  position: absolute;
+  right: 1rem;
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+}
+.settingsModal {
+  z-index: 50;
+  padding-bottom: 4rem;
 }
 </style>
