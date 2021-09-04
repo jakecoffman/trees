@@ -29,6 +29,9 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{"Hello": "world!}"`))
 	})
+	mux.HandleFunc("/api", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("YOU HIT API"))
+	})
 	mux.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("player")
 		if err == http.ErrNoCookie {
