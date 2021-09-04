@@ -61,7 +61,11 @@ export default {
       params = `action=new`
     }
 
-    this.ws = new WebSocket(`ws://${location.host}/ws?${params}`)
+    let protocol = 'ws://'
+    if (location.protocol === 'https:') {
+      protocol = 'wss://'
+    }
+    this.ws = new WebSocket(`${protocol}${location.host}/ws?${params}`)
     this.ws.onopen = this.wsOpen
     this.ws.onclose = this.wsClose
     this.ws.onerror = this.wsError
