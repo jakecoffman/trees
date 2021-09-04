@@ -1,7 +1,7 @@
 package arcade
 
 import (
-	"github.com/jakecoffman/trees/server/server/lib"
+	"github.com/jakecoffman/trees/server/lib"
 	"log"
 	"sync"
 )

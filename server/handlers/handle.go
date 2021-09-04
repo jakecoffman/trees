@@ -1,9 +1,9 @@
-package server
+package handlers
 
 import (
 	"fmt"
-	"github.com/jakecoffman/trees/server/server/arcade"
-	"github.com/jakecoffman/trees/server/server/lib"
+	"github.com/jakecoffman/trees/server/arcade"
+	"github.com/jakecoffman/trees/server/lib"
 	"log"
 	"net/http"
 	"runtime/debug"

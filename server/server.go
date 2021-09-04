@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
-	"github.com/jakecoffman/trees/server/server"
-	"github.com/jakecoffman/trees/server/server/lib"
+	"github.com/jakecoffman/trees/server/handlers"
+	"github.com/jakecoffman/trees/server/lib"
 	"log"
 	"math/rand"
 	"net/http"
@@ -56,7 +56,7 @@ func main() {
 		}
 		defer ws.Close()
 
-		server.Handle(lib.NewSafetySocket(ws), r)
+		handlers.Handle(lib.NewSafetySocket(ws), r)
 	})
 	log.Println("Serving http://127.0.0.1:8333")
 	if err := http.ListenAndServe("127.0.0.1:8333", mux); err != nil {

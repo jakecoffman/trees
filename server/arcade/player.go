@@ -2,7 +2,7 @@ package arcade
 
 import (
 	"encoding/json"
-	"github.com/jakecoffman/trees/server/server/lib"
+	"github.com/jakecoffman/trees/server/lib"
 	"log"
 )
 
