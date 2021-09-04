@@ -4,7 +4,10 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'go build server/server.go'
+                sh '''
+                cd server
+                go build server.go
+                '''
                 sh '''
                 cd ui
                 npm ci
@@ -15,7 +18,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-scp server deploy@stldevs.com:~
+scp server/server deploy@stldevs.com:~
 scp ui/dist deploy@stldevs.com:~
 ssh deploy@stldevs.com << EOF
    sudo service trees stop
