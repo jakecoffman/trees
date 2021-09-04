@@ -1,5 +1,6 @@
 <template>
   <section class="game" :class="{'blue-bg': you, 'orange-bg': !you}">
+    <the-sun class="sun" :day="game.State.Day"/>
     <svg class="board" viewBox="-610 -560 1220 1115">
       <g transform="rotate(-30)" fill="white" stroke="black">
         <g class="grid" id="grid">
@@ -22,9 +23,11 @@
 <script>
 import HexCell from "./HexCell.vue";
 import {grid} from "../assets/grid";
+import TheSun from "./TheSun.vue";
 
 export default {
   components: {
+    TheSun,
     HexCell
   },
   props: ['game', 'you', 'selection'],
@@ -50,5 +53,12 @@ export default {
 .board {
   max-width: 600px;
   max-height: 90vh;
+}
+.sun {
+  position: absolute;
+  right: 0;
+
+  width: 100px;
+  height: 100px;
 }
 </style>
