@@ -58,8 +58,8 @@ func main() {
 
 		server.Handle(lib.NewSafetySocket(ws), r)
 	})
-	log.Println("Serving http://127.0.0.1:8080")
-	if err := http.ListenAndServe("127.0.0.1:8080", mux); err != nil {
+	log.Println("Serving http://127.0.0.1:8333")
+	if err := http.ListenAndServe("127.0.0.1:8333", mux); err != nil {
 		log.Println(err)
 	}
 }
