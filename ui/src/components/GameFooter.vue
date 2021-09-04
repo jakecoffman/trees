@@ -2,7 +2,7 @@
   <footer>
     <span v-if="conn.value !== 'Open'">Connection {{conn}}</span>
 
-    <div v-if="selection && !seedSource">
+    <div v-if="selection !== null && !seedSource">
       {{richnessText}} {{treeText}}
     </div>
     <div v-if="game.State.Day < 27" class="buttons">
@@ -47,13 +47,13 @@ export default {
   },
   computed: {
     cell() {
-      if (!this.selection) {
+      if (this.selection === null) {
         return null
       }
       return this.game.State.Board.Cells[this.selection]
     },
     tree() {
-      if (!this.selection) {
+      if (this.selection === null) {
         return null
       }
       return this.game.State.Trees[this.selection.toString()]

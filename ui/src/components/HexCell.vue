@@ -1,7 +1,6 @@
 <template>
   <g class="cell" @click="cellClick">
     <polygon points="100,0 50,-87 -50,-87 -100,-0 -50,87 50,87" :class="polyClass"></polygon>
-    <text class="xyz"></text>
     <image v-if="href"
            transform="rotate(30)"
            :x="offsetX"
