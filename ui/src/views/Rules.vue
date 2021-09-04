@@ -84,6 +84,8 @@
     </p>
 
     <p>After 26 days the game ends, scores are tallied, and the highest score wins.</p>
+
+    <button @click="$router.back()">Ok, I got it!</button>
   </section>
 </template>
 <style>
