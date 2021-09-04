@@ -1,6 +1,6 @@
 <template>
   <g class="cell" @click="cellClick">
-    <polygon points="100,0 50,-87 -50,-87 -100,-0 -50,87 50,87" :class="polyClass"></polygon>
+    <polygon class="hex" points="100,0 50,-87 -50,-87 -100,-0 -50,87 50,87" :class="polyClass"></polygon>
     <image v-if="href"
            transform="rotate(30)"
            :x="offsetX"
@@ -39,7 +39,7 @@ export default {
     shadow() {
       if (this.game.State.Shadows[3] == null) {
         // not sure why but sometimes shadows is [null, null, null, null]
-        return
+        return 0
       }
       if (this.game.State.Shadows[3].includes(this.index)) {
         return 3
@@ -148,5 +148,8 @@ export default {
 }
 .no-sun {
   filter: brightness(50%) !important;
+}
+.hex {
+  transition: .5s filter linear;
 }
 </style>
