@@ -9,7 +9,8 @@ export default {}
 <style scoped>
 .modal {
   position: absolute;
-  top: 40%;
+  top: 50%;
+  transform: translate(0, -50%);
   left: 1rem;
   right: 1rem;
   z-index: 1;
@@ -17,7 +18,6 @@ export default {}
   color: black;
   border: 1px solid black;
   border-radius: 5px;
-  margin: 1rem;
   padding: 1rem;
 
   display: flex;

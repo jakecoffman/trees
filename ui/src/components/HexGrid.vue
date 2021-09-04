@@ -17,7 +17,6 @@
         </g>
       </g>
     </svg>
-    <div style="color: gray; font-size: 10pt;">Icons made by Freepik from www.flaticon.com</div>
   </section>
 </template>
 <script>

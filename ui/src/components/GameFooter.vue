@@ -34,15 +34,17 @@
     </span>
 
     <modal v-if="openSettings" class="settingsModal">
-      <footer class="modal-footer">
-        <h3>Settings</h3>
-        <button @click="quit()">
-          Quit
-        </button>
-        <button @click="openSettings = false">
-          Close Settings
-        </button>
-      </footer>
+      <h3>Settings</h3>
+      <button @click="quit()">
+        Quit
+      </button>
+      <button @click="openSettings = false">
+        Close Settings
+      </button>
+      <div style="color: gray; font-size: 10pt;">
+        Created by Jake Coffman<br/>
+        Icons made by Freepik from www.flaticon.com
+      </div>
     </modal>
   </footer>
 </template>
@@ -189,9 +191,12 @@ footer {
   width: 25px;
   height: 25px;
   cursor: pointer;
+  z-index: 9001;
 }
 .settingsModal {
   z-index: 50;
-  padding-bottom: 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 </style>
