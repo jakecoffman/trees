@@ -2,6 +2,7 @@ package game
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 )
 
@@ -102,17 +103,12 @@ func (s *State) RandomizeBoard() {
 		index := rand.Intn(len(s.Board.Map))
 		randCoord := s.Board.Coords[index]
 		if s.Board.Map[randCoord].Richness != RichnessUnusable {
-			cell := s.Board.Map[randCoord]
-			cell.Richness = RichnessUnusable
-			s.Board.Map[randCoord] = cell
-			s.Board.Cells[cell.Index].Richness = RichnessUnusable
+			s.Board.Map[randCoord].Richness = RichnessUnusable
 			actuallyEmptyCells++
+			log.Println(randCoord, randCoord.Opposite(), randCoord != randCoord.Opposite())
 			if randCoord != randCoord.Opposite() {
-				cell := s.Board.Map[randCoord]
-				cell.Richness = RichnessUnusable
-				s.Board.Map[randCoord] = cell
+				s.Board.Map[randCoord.Opposite()].Richness = RichnessUnusable
 				actuallyEmptyCells++
-				s.Board.Cells[cell.Index].Richness = RichnessUnusable
 			}
 		}
 	}

@@ -24,6 +24,7 @@
         {{index}}
       </text>
     </g>
+<!--    <text>{{hex.x}} {{hex.y}} {{hex.z}}</text>-->
   </g>
 </template>
 <script>
@@ -129,10 +130,9 @@ export default {
 .selected {
   opacity: 50%;
   fill: red;
-  /*stroke-width: 3px;*/
 }
 .richUnusable {
-  fill: blue;
+  fill: #ffdd8a;
 }
 .richLow {
   fill: darkseagreen;
