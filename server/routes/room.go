@@ -77,8 +77,8 @@ func getRoom(c *gin.Context) {
 		c.AbortWithStatusJSON(401, "not logged in")
 		return
 	}
-
-	room := arcade.Building.GetRoom(c.Query("room"))
+	code := c.Param("id")
+	room := arcade.Building.GetRoom(code)
 	if room != nil {
 		c.JSON(200, "OK")
 	} else {
