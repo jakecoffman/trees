@@ -28,7 +28,7 @@ ssh deploy@stldevs.com << EOF
    rm -rf /opt/trees/dist
    mv ~/dist /opt/trees
    cd /opt/trees
-   chmod +x trees
+   chmod +x server
    sudo service trees start
 '''
             }
