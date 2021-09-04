@@ -6,7 +6,7 @@ After=network.target
 Restart=always
 User=deploy
 WorkingDirectory=/opt/trees
-ExecStart=/opt/trees/trees
+ExecStart=/opt/trees/server
 
 [Install]
 WantedBy=default.target
