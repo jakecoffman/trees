@@ -1,0 +1,12 @@
+[Unit]
+Description=trees
+After=network.target
+
+[Service]
+Restart=always
+User=deploy
+WorkingDirectory=/opt/trees
+ExecStart=/opt/trees/trees
+
+[Install]
+WantedBy=default.target

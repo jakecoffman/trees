@@ -85,9 +85,9 @@ export default {
       }
       let path = "/"
       if (this.tree.Owner) {
-        path += 'orange'
-      } else {
         path += 'blue'
+      } else {
+        path += 'orange'
       }
       if (this.tree.Size === 0) {
         path += '/seed.svg'
