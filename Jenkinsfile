@@ -25,7 +25,8 @@ scp -r ui/dist deploy@stldevs.com:~
 ssh deploy@stldevs.com << EOF
    sudo service trees stop
    mv -f ~/server /opt/trees/server
-   mv -f ~/dist /opt/trees/web
+   rm -rf /opt/trees/dist
+   mv ~/dist /opt/trees
    cd /opt/trees
    chmod +x trees
    sudo service trees start
