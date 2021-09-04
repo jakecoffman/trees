@@ -1,24 +1,26 @@
 <template>
   <header v-if="game">
     <div class="score">
-      <span class="orange">
-        <span>
-          {{ you === 0 ? 'You' : 'Player 1' }}:
-          <span>Score {{ game.State.Score[0] }}<br/>☀️{{ game.State.Energy[0] }}</span>
-          <span v-if="!game.Players[0].Connected">(Disconnected)</span>
-        </span>
-      </span>
+      <fieldset class="orange">
+        <legend>{{ you === 0 ? 'You' : 'Opponent' }}</legend>
+        Score {{ game.State.Score[0] }}
+        <span v-if="!game.Players[0].Connected">(Disconnected)</span>
+        <br/>
+        ☀️{{ game.State.Energy[0] }}
+      </fieldset>
 
-      <span class="blue">
-        <span v-if="game.Players.length < 2">Need opponent</span>
-        <span v-else>
-          <span>
-            {{ you === 1 ? 'You' : 'Player 2' }}:
-            <span>Score {{ game.State.Score[1] }}<br/>☀️{{ game.State.Energy[1] }}</span>
-            <span v-if="!game.Players[1].Connected">(Disconnected)</span>
-          </span>
-        </span>
-      </span>
+      <fieldset class="blue">
+        <legend>{{ you === 1 ? 'You' : 'Opponent' }}</legend>
+        <div v-if="game.Players.length < 2">
+          Waiting
+        </div>
+        <div v-else>
+          Score {{ game.State.Score[1] }}
+          <span v-if="!game.Players[1].Connected">(Disconnected)</span>
+          <br/>
+          ☀️{{ game.State.Energy[1] }}
+        </div>
+      </fieldset>
     </div>
 
     <div class="infos">
@@ -46,5 +48,9 @@ export default {
   margin-bottom: .5rem;
   display: flex;
   justify-content: space-between;
+}
+fieldset {
+  border: 1px solid;
+  border-radius: 5px;
 }
 </style>

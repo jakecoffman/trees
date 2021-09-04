@@ -9,7 +9,7 @@ export default {}
 <style scoped>
 .modal {
   position: absolute;
-  top: 50%;
+  top: 40%;
   left: 1rem;
   right: 1rem;
   z-index: 1;
@@ -23,6 +23,6 @@ export default {}
   align-items: center;
   padding-bottom: 1rem;
 
-  box-shadow: gray 5px 5px;
+  box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
 }
 </style>

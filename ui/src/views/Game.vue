@@ -5,6 +5,7 @@
     <game-footer v-if="game" :game="game" :selection="selection" :you="you"></game-footer>
     <modal v-if="game && game.Players.length !== 2">
       <p>Waiting for opponent</p>
+      <p>Room code {{game.Code}}</p>
     </modal>
   </section>
 </template>
