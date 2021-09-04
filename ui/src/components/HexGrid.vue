@@ -16,7 +16,7 @@
         </g>
       </g>
     </svg>
-    <div style="color: black;">Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+    <div style="color: gray; font-size: 10pt;">Icons made by Freepik from www.flaticon.com</div>
   </section>
 </template>
 <script>

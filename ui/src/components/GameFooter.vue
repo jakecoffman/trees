@@ -2,11 +2,10 @@
   <footer>
     <span v-if="conn.value !== 'Open'">Connection {{conn}}</span>
 
-    <div v-if="selection">
+    <div v-if="selection && !seedSource">
       {{richnessText}} {{treeText}}
     </div>
-    <div v-if="game.State.Day < 27">
-      <button @click="endTurn()" v-if="!seedSource">End Turn</button>
+    <div v-if="game.State.Day < 27" class="buttons">
       <span v-if="tree && tree.Owner === you && !tree.IsDormant && !seedSource">
         <button v-if="tree.Size >= 1" @click="seed1(selection)" :disabled="seedCost > game.State.Energy[you]">
           Seed (Cost {{seedCost}})
@@ -21,10 +20,11 @@
       <span v-if="!tree && seedSource && cell?.Richness > 0">
         <button @click="seed2(selection)">Seed Here</button>
       </span>
-      <div v-if="seedSource">
-        <p>Select a location to seed</p>
+      <div v-if="seedSource" class="flex column center">
+        <p v-if="tree || cell?.Richness === 0">Select a location to seed</p>
         <button @click="seedSource = null">Cancel Seed</button>
       </div>
+      <button @click="endTurn()" v-if="!seedSource">End Turn</button>
     </div>
     <span v-else>
       <span v-if="game.State.Score[0] === game.State.Score[1]">Tie Game!</span>
@@ -129,17 +129,30 @@ export default {
 }
 </script>
 <style scoped>
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
 footer {
-  /*position: fixed;*/
-  /*bottom: 0;*/
-  /*width: 100vw;*/
-  /*height: 4rem;*/
-  /*background: black;*/
+  margin-top: 1rem;
 
   display: flex;
   gap: .5rem;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+.flex {
+  display: flex;
+}
+.column {
+  flex-direction: column;
+}
+.center {
+  align-items: center;
 }
 </style>

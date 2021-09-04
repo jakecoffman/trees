@@ -52,20 +52,11 @@ export default {
       return
     }
 
-    let params = ''
-    if (this.$route.params.id) {
-      console.log('JOINING')
-      params = `action=join&code=${this.$route.params.id}`
-    } else {
-      console.log('NEWING')
-      params = `action=new`
-    }
-
     let protocol = 'ws://'
     if (location.protocol === 'https:') {
       protocol = 'wss://'
     }
-    this.ws = new WebSocket(`${protocol}${location.host}/ws?${params}`)
+    this.ws = new WebSocket(`${protocol}${location.host}/ws?code=${this.$route.params.id}`)
     this.ws.onopen = this.wsOpen
     this.ws.onclose = this.wsClose
     this.ws.onerror = this.wsError
