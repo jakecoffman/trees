@@ -23,7 +23,7 @@ a {
   color: #c48712;
 }
 .orange-bg {
-  background: #FFA500;
+  background: black;
 }
 .blue {
   color: #8fa2ff;
@@ -32,7 +32,7 @@ a {
   color: #334ed9;
 }
 .blue-bg {
-  background: #8fa2ff;
+  background: black;
 }
 .flex {
   display: flex;

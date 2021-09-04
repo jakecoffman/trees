@@ -144,7 +144,8 @@ export default {
   fill: green;
 }
 .shadow {
-  filter: brightness(50%);
+  /*fill: #3d3d3d !important;*/
+  filter: contrast(0%) brightness(60%);
 }
 .no-sun {
   filter: brightness(50%) !important;
