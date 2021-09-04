@@ -10,8 +10,11 @@ export default {}
 body {
   margin: 0;
   background: black;
-  color: white;
+  color: #c5c5c5;
   font-size: 16pt;
+}
+a {
+  color: #91c8ff;
 }
 .orange {
   color: #FFA500;

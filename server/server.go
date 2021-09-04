@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/google/uuid"
+	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/jakecoffman/trees/server/handlers"
 	"github.com/jakecoffman/trees/server/lib"
@@ -24,42 +24,40 @@ var upgrader = websocket.Upgrader{
 }
 
 func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"Hello": "world!}"`))
+	r := gin.Default()
+	gin.SetMode(gin.ReleaseMode)
+
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(200, map[string]string{"Hello": "world"})
 	})
-	mux.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
-		cookie, err := r.Cookie("player")
-		if err == http.ErrNoCookie {
-			playerId := uuid.New().String()
-			cookie = &http.Cookie{
-				Name:   "player",
-				Value:  playerId,
-				Path:   "/",
-				MaxAge: 60 * 60 * 24 * 256, // 1 Year
-			}
-			http.SetCookie(w, cookie)
+	r.GET("/login", handlers.Login)
+	r.GET("/ws", func(c *gin.Context) {
+		playerId, err := c.Cookie("player")
+		if err != nil {
+			log.Println("Player failed to connect:", err.Error())
+			c.String(401, "application/json", `{"error":"not logged in"}`)
+			return
+		}
+		log.Println(playerId, "Connected")
+
+		action := c.Query("action")
+		code := c.Query("code")
+		if action == "" {
+			c.String(401, "application/json", `{"error":"missing action query string"}`)
+			return
 		}
 
-		w.Header().Set("Content-Type", "application/json")
-		//w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
-		//w.Header().Set("Access-Control-Allow-Credentials", "true")
-		w.Write([]byte(`{"status": "ok"}`))
-	})
-	mux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		log.Println("Incoming ws connection")
-		ws, err := upgrader.Upgrade(w, r, nil)
+		ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 		if err != nil {
-			log.Print("upgrade:", err)
+			log.Println("upgrade error:", err)
 			return
 		}
 		defer ws.Close()
 
-		handlers.Handle(lib.NewSafetySocket(ws), r)
+		handlers.WsHandler(lib.NewSafetySocket(ws), playerId, action, code)
 	})
 	log.Println("Serving http://127.0.0.1:8454")
-	if err := http.ListenAndServe("127.0.0.1:8454", mux); err != nil {
+	if err := http.ListenAndServe("127.0.0.1:8454", r); err != nil {
 		log.Println(err)
 	}
 }

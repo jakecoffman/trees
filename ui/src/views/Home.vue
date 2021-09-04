@@ -3,7 +3,7 @@
     <h1>Tree Game</h1>
     <p>
       Tree Game is a 2-player strategy game where you try to score
-      the most points by selling trees before you opponent does.
+      the most points by selling mature trees before you opponent does.
     </p>
     <ul>
       <li>
@@ -38,12 +38,17 @@
 <script>
 import Modal from "../components/Modal.vue";
 export default {
-  components: {Modal},
+  components: {
+    Modal
+  },
   data() {
     return {
       join: false,
       code: ''
     }
+  },
+  created() {
+    fetch('/api/login')
   }
 }
 </script>

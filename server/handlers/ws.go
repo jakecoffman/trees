@@ -5,11 +5,10 @@ import (
 	"github.com/jakecoffman/trees/server/arcade"
 	"github.com/jakecoffman/trees/server/lib"
 	"log"
-	"net/http"
 	"runtime/debug"
 )
 
-func Handle(ws *lib.SafetySocket, r *http.Request) {
+func WsHandler(ws *lib.SafetySocket, playerId, action, code string) {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Println("Handler crashed:", r, string(debug.Stack()))
@@ -17,30 +16,13 @@ func Handle(ws *lib.SafetySocket, r *http.Request) {
 			log.Println("Player disconnected")
 		}
 	}()
-	var playerId string
-
-	// extract cookie or create a new playerId
-	{
-		cookie, err := r.Cookie("player")
-		if err != nil {
-			log.Println("Player failed to connect:", err.Error())
-			arcade.SendMsg(ws, "Failed to connect, missing player cookie")
-			return
-		} else {
-			playerId = cookie.Value
-			log.Println(playerId, "Connected")
-		}
-	}
 
 	player := arcade.Building.Enter(playerId, ws)
 	defer arcade.Building.Disconnect(player)
 
-	// handle what the player is trying to do
-	action := r.URL.Query().Get("action")
-	code := r.URL.Query().Get("code")
-
 	var room *arcade.Room
 
+	// TODO move these into REST
 	switch action {
 	case "new":
 		str := fmt.Sprint(playerId)

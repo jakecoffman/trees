@@ -1,7 +1,7 @@
 <template>
   <section>
 
-    <h2>Trees</h2>
+    <h2>Rules</h2>
 
     <p>
       There are 4 levels of tree representing a tree's lifecycle:
