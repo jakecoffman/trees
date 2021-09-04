@@ -5,27 +5,19 @@
       Tree Game is a 2-player strategy game where you try to score
       the most points by selling mature trees before you opponent does.
     </p>
-    <ul>
-      <li>
-        <router-link to="/rules">
-          Read full rules
-        </router-link>
-      </li>
-      <li>
-        <router-link to="/games">
-          Create New Multiplayer Game
-        </router-link>
-      </li>
-      <li>
-        <button @click="showJoinModal()">Join Game</button>
-      </li>
-      <li>
-        Create New Game Against Bot (Coming Soon)
-      </li>
-      <li>
-        Log In (Coming Soon)
-      </li>
-    </ul>
+    <p>
+      <router-link to="/rules">
+        Read full rules
+      </router-link>
+    </p>
+    <div class="welcome-choices">
+      <button @click="$router.push('/games')">
+        New Game
+      </button>
+      <button @click="showJoinModal()">
+        Join Game
+      </button>
+    </div>
 
     <transition name="slide">
       <modal v-if="existing">
@@ -42,7 +34,7 @@
     </transition>
 
     <transition name="slide">
-      <modal v-if="join">
+      <modal v-model="join">
         <p>Enter the ID of the game</p>
         <input type="number" v-model="code" ref="codeEntry" :disabled="code.toString().length === 6">
         <footer class="modal-footer">
@@ -119,5 +111,8 @@ export default {
   display: flex;
   gap: 1rem;
 }
-
+.welcome-choices {
+  display: flex;
+  justify-content: center;
+}
 </style>

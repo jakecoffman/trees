@@ -5,12 +5,13 @@
     <game-footer ref="foot" v-if="game" :game="game" :selection="selection" :you="you"></game-footer>
 
     <div class="smokescreen" v-if="!game || game.Players.length !== 2 || conn !== 'Open'"></div>
-    <modal v-if="game && game.Players.length !== 2">
+    <modal :open="game && game.Players.length !== 2">
       <p>Waiting for opponent</p>
       <p>Room code {{game.Code}}</p>
     </modal>
-    <modal v-if="conn !== 'Open'">
-      {{conn}}
+    <modal :open="conn !== 'Open'">
+      <p>{{conn}}</p>
+      <button @click="$router.push('/')">Go home</button>
     </modal>
   </section>
 </template>

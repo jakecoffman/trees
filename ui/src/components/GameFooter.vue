@@ -33,17 +33,22 @@
       <span v-else>Blue Wins!</span>
     </span>
 
-    <modal v-if="openSettings" class="settingsModal">
-      <h3>Settings</h3>
-      <button @click="quit()">
-        Quit
-      </button>
-      <button @click="openSettings = false">
-        Close Settings
-      </button>
-      <div style="color: gray; font-size: 10pt;">
-        Created by Jake Coffman<br/>
-        Icons made by Freepik from www.flaticon.com
+    <modal v-model="openSettings" class="settingsModal">
+      <div class="settingsModal">
+        <h3>Settings</h3>
+        <button @click="$router.push(`/rules`)">
+          View Rules
+        </button>
+        <button @click="quit()">
+          Quit Game
+        </button>
+        <button @click="openSettings = false">
+          Close Settings
+        </button>
+        <div style="color: gray; font-size: 10pt;">
+          Created by Jake Coffman<br/>
+          Icons made by Freepik from www.flaticon.com
+        </div>
       </div>
     </modal>
   </footer>

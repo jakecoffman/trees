@@ -45,7 +45,7 @@ a {
   flex-grow: 1;
 }
 button {
-  background: white;
+  background: #c4c4c4;
   border: 1px solid black;
   font-size: 16pt;
   padding: .25rem 1rem;
