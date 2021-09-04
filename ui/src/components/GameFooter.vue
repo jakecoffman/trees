@@ -2,10 +2,11 @@
   <footer>
     <span v-if="conn.value !== 'Open'">Connection {{conn}}</span>
 
+    <div v-if="locked">Waiting for opponent's move</div>
     <div v-if="selection !== null && !seedSource">
       {{richnessText}} {{treeText}}
     </div>
-    <div v-if="game.State.Day < 27" class="buttons">
+    <div v-if="game.State.Day < 26" class="buttons">
       <span v-if="tree && tree.Owner === you && !tree.IsDormant && !seedSource">
         <button v-if="tree.Size >= 1" @click="seed1(selection)" :disabled="locked || seedCost > game.State.Energy[you]">
           Seed (Cost {{seedCost}})
