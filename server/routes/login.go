@@ -6,6 +6,7 @@ import (
 	"github.com/jakecoffman/crud"
 	"github.com/jakecoffman/trees/server/arcade"
 	"net/http"
+	"net/url"
 )
 
 var Login = crud.Spec{
@@ -30,7 +31,16 @@ func login(c *gin.Context) {
 	if err == http.ErrNoCookie {
 		playerId := uuid.New().String()
 		// TODO are these values good?
-		c.SetCookie("player", playerId, oneYear, "/", "", true, false)
+		http.SetCookie(c.Writer, &http.Cookie{
+			Name:     "player",
+			Value:    url.QueryEscape(playerId),
+			MaxAge:   oneYear,
+			Path:     "/",
+			Domain:   "trees.jakecoffman.com",
+			SameSite: http.SameSiteNoneMode,
+			Secure:   true,
+			HttpOnly: false,
+		})
 		c.JSON(200, loginResponse{New: true})
 		return
 	}
