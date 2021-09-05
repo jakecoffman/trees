@@ -18,12 +18,14 @@ var Admin = crud.Spec{
 
 type usersResponse struct {
 	PlayerCount, GameCount int
+	ActiveWsConnections    uint64
 }
 
 func count(c *gin.Context) {
 	playerCount, gameCount := arcade.Building.Counts()
 	c.JSON(200, usersResponse{
-		PlayerCount: playerCount,
-		GameCount:   gameCount,
+		PlayerCount:         playerCount,
+		GameCount:           gameCount,
+		ActiveWsConnections: arcade.ActiveWsConnections,
 	})
 }

@@ -6,6 +6,8 @@ import (
 	"sync"
 )
 
+var ActiveWsConnections uint64
+
 type bldg struct {
 	mutex   sync.RWMutex
 	players map[string]*Player
