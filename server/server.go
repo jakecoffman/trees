@@ -20,6 +20,7 @@ func main() {
 	engine := gin.Default()
 	a := &adapter.Adapter{Engine: engine}
 	r := crud.NewRouter("Trees", "1.0.0", a)
+	r.Swagger.BasePath = "/api"
 
 	if err := r.Add(routes.Login); err != nil {
 		log.Fatal(err)
