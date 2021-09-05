@@ -1,5 +1,8 @@
 <template>
   <section>
+    <span class="close">
+      <a class="close" @click="$router.back()">x</a>
+    </span>
 
     <h2>Rules</h2>
 
@@ -96,5 +99,10 @@
 <style>
 section {
   margin: 1rem;
+}
+.close {
+  cursor: pointer;
+  float: right;
+  clear: both;
 }
 </style>
