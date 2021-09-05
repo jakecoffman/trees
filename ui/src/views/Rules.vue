@@ -99,6 +99,7 @@
 <style>
 section {
   margin: 1rem;
+  overflow-y: scroll;
 }
 .close {
   cursor: pointer;
