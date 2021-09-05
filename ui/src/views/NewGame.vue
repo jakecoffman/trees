@@ -7,6 +7,7 @@
 export default {
   async mounted() {
     const r = await fetch('/api/rooms', {
+      credentials: 'include',
       method: 'POST'
     })
     if (!r.ok) {

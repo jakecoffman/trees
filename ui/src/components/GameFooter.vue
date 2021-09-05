@@ -157,7 +157,7 @@ export default {
       this.locked = false
     },
     async quit() {
-      await fetch(`/api/rooms/${this.game.Room}`, {method: 'DELETE'})
+      await fetch(`/api/rooms/${this.game.Room}`, {credentials: 'include', method: 'DELETE'})
       await this.$router.push('/')
     }
   }

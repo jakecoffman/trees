@@ -63,7 +63,7 @@ export default {
   watch: {
     async code() {
       if (this.code.toString().length === 6) {
-        const r = await fetch(`/api/rooms/${this.code}`)
+        const r = await fetch(`/api/rooms/${this.code}`, {credentials: 'include'})
         if (!r.ok) {
           createToast(`Room ${this.code} not found`, {type: 'danger', position: 'bottom-right'})
           this.code = ''
@@ -77,7 +77,7 @@ export default {
     }
   },
   async created() {
-    const r = await fetch('/api/login')
+    const r = await fetch('/api/login', {credentials: 'include'})
     if (!r.ok) {
       return alert("Failed to login")
     }
@@ -86,7 +86,7 @@ export default {
   },
   methods: {
     async quit() {
-      const r = await fetch(`/api/rooms/${this.existing}`, {method: 'DELETE'})
+      const r = await fetch(`/api/rooms/${this.existing}`, {credentials: 'include', method: 'DELETE'})
       if (!r.ok) {
         return alert("Failed to quit")
       }
