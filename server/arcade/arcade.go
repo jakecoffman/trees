@@ -57,7 +57,7 @@ func (b *bldg) Disconnect(player *Player) {
 	if player.Room != nil {
 		// tell the others what has happened
 		player.Room.sendAllGame()
-		player.Room.sendAll(PlayerMessage{Kind: "msg", Value: "Player disconnected"})
+		//player.Room.sendAll(PlayerMessage{Kind: "msg", Value: "Player disconnected"})
 	}
 }
 

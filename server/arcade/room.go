@@ -138,7 +138,7 @@ func (r *Room) loop() {
 				r.join(cmd.Player)
 				r.sendAllGame()
 			case CmdRejoin:
-				r.sendAll(PlayerMessage{Kind: "msg", Value: "Player reconnected"})
+				//r.sendAll(PlayerMessage{Kind: "msg", Value: "Player reconnected"})
 				r.sendAllGame()
 			case CmdQuit:
 				r.quit(cmd.Player)
@@ -366,7 +366,7 @@ func (r *Room) join(player *Player) {
 		return
 	}
 	r.Players = append(r.Players, player)
-	r.sendAll(PlayerMessage{Kind: "msg", Value: "Player connected"})
+	//r.sendAll(PlayerMessage{Kind: "msg", Value: "Player connected"})
 }
 
 func (r *Room) quit(quitter *Player) {
