@@ -80,4 +80,11 @@ export default {
   width: 100px;
   height: 100px;
 }
+
+@media (max-width: 600px) {
+  .sun {
+    width: 75px;
+    height: 75px;
+  }
+}
 </style>
