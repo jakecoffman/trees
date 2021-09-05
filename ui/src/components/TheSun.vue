@@ -27,8 +27,8 @@
       <animateTransform attributeName="transform"
                         attributeType="XML"
                         type="rotate"
-                        values="0;360"
-                        dur="10s"
+                        values="0;7200;0"
+                        dur="480s"
                         repeatCount="indefinite"/>
     </g>
 
