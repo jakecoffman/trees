@@ -22,7 +22,8 @@ type Room struct {
 	State   *game.State
 	Players []*Player
 
-	input chan Cmd
+	input                chan Cmd
+	finalDayNotification bool
 }
 
 func NewRoom() *Room {
@@ -204,8 +205,9 @@ func (r *Room) execute(moves [2]*game.Action) ([2]*game.Action, bool) {
 		return [2]*game.Action{}, true
 	}
 
-	if r.State.Day == maxDays-1 {
+	if r.State.Day == maxDays-1 && !r.finalDayNotification {
 		r.sendAll(PlayerMessage{Kind: "msg", Value: "Final turn!"})
+		r.finalDayNotification = true
 	}
 
 	// if they are both wait, unlock them since the day has progressed
@@ -232,7 +234,7 @@ func (r *Room) execute(moves [2]*game.Action) ([2]*game.Action, bool) {
 	return moves, false
 }
 
-const maxDays = 26
+const maxDays = 24
 
 func (r *Room) applyMoves(moves [2]*game.Action) {
 	state := r.State

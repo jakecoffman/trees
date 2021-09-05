@@ -54,7 +54,7 @@
       If one player Ends, the other may continue taking actions until they End too.
     </p>
 
-    <p>After 26 days the game ends.</p>
+    <p>After 24 days the game ends.</p>
 
     <h2>Costs</h2>
 
@@ -83,7 +83,7 @@
       At the end of the game, players score 1 additional point for every 3 Energy.
     </p>
 
-    <p>After 26 days the game ends, scores are tallied, and the highest score wins.</p>
+    <p>After 24 days the game ends, scores are tallied, and the highest score wins.</p>
 
     <button @click="$router.back()">Ok, I got it!</button>
   </section>
