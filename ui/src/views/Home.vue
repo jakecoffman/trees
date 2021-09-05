@@ -19,6 +19,10 @@
       </button>
     </div>
 
+    <div style="margin-left: 50%; transform: translate(-50%, 0)">
+      <the-sun :demo="true"/>
+    </div>
+
     <transition name="slide">
       <modal v-if="existing">
         <p>You are already in a game.</p>
@@ -49,8 +53,10 @@
 <script>
 import Modal from "../components/Modal.vue";
 import {createToast} from "mosha-vue-toastify";
+import TheSun from "../components/TheSun.vue";
 export default {
   components: {
+    TheSun,
     Modal
   },
   data() {

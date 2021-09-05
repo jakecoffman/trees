@@ -54,6 +54,10 @@ button {
   padding: .25rem 1rem;
   border-radius: 5px;
 }
+p {
+  margin-top: .5rem;
+  margin-bottom: .5rem;
+}
 @media (max-height: 600px) {
   html {
     font-size: 6px;

@@ -2,10 +2,10 @@
   <header v-if="game">
     <div class="score-mini">
       <div class="orange">
-        {{ you === 0 ? 'You' : 'Opponent' }}: {{game.State.Score[0]}} ☀️{{ game.State.Energy[0] }}
+        {{ you === 0 ? 'You' : 'Opponent' }} Score: {{game.State.Score[0]}} ☀️{{ game.State.Energy[0] }}
       </div>
       <div class="blue">
-        {{ you === 1 ? 'You' : 'Opponent' }}: {{game.State.Score[1]}} ☀️{{ game.State.Energy[1] }}
+        {{ you === 1 ? 'You' : 'Opponent' }} Score: {{game.State.Score[1]}} ☀️{{ game.State.Energy[1] }}
       </div>
     </div>
     <div class="score">

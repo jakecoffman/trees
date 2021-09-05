@@ -190,6 +190,9 @@ footer {
 .center {
   align-items: center;
 }
+.just-center {
+  justify-content: center;
+}
 .settings {
   position: fixed;
   right: 1rem;
