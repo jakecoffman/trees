@@ -11,16 +11,21 @@
       <dd>Seeds cannot cast seeds and do not gather Sun.</dd>
 
       <dt>Sprout</dt>
-      <dd>Sprouts can cast seeds 1 space away and gather 1 Sun at the beginning of the Day.</dd>
+      <dd>Sprouts can cast seeds 1 space away and gather 1 Energy at the beginning of the Day.</dd>
 
       <dt>Sapling</dt>
-      <dd>Saplings can cast seeds 2 spaces away and gather 2 Sun at the beginning of the Day.</dd>
+      <dd>Saplings can cast seeds 2 spaces away and gather 2 Energy at the beginning of the Day.</dd>
 
       <dt>Tree</dt>
-      <dd>Trees can cast seeds 3 spaces away and gather 3 Sun at the beginning of the Day. They also can be sold for
+      <dd>Trees can cast seeds 3 spaces away and gather 3 Energy at the beginning of the Day. They also can be sold for
         points.
       </dd>
     </dl>
+
+    <p>
+      Trees that are shaded by other trees that are larger or equal in size
+      don't gather energy.
+    </p>
 
     <h2>Turns</h2>
 

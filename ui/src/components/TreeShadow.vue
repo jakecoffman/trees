@@ -1,7 +1,7 @@
 <template>
-  <g :transform="`rotate(${rotation})`" class="shadow">
+  <g v-if="tree && tree.Size === showSize" :transform="`rotate(${rotation})`" class="shadow">
     <image class="shadow" v-if="tree && tree.Size > 0"
-           style="opacity: 50%;"
+           style="opacity: 70%;"
            :transform="`rotate(30) translate(0, -50) scale(${scale}, 1)`"
            width="100"
            height="100"
@@ -10,7 +10,7 @@
 </template>
 <script>
 export default {
-  props: ['game', 'index'],
+  props: ['game', 'index', 'showSize'],
   data() {
     return {
       rotation: this.day * -60
