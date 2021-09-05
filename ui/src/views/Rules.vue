@@ -96,7 +96,7 @@
     <button @click="$router.back()">Ok, I got it!</button>
   </section>
 </template>
-<style>
+<style scoped>
 section {
   margin: 1rem;
   overflow-y: scroll;
