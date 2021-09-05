@@ -1,4 +1,4 @@
-package main
+package bot
 
 func max(a, b int8) int8 {
 	if a > b {

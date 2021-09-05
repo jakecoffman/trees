@@ -14,12 +14,18 @@ type Player struct {
 }
 
 func (p *Player) MarshalJSON() ([]byte, error) {
+	var connected bool
+	if p.id == "bot" {
+		connected = true
+	} else {
+		connected = p.ws != nil
+	}
 	return json.Marshal(struct {
 		Name      string
 		Connected bool
 	}{
-		//Name:      p.Name,
-		Connected: p.ws != nil,
+		Name:      "Bot",
+		Connected: connected,
 	})
 }
 

@@ -108,6 +108,8 @@ func wsHandler(ws *lib.SafetySocket, playerId, code string) {
 			room.GrowTree(player, msg.Target)
 		case "sell":
 			room.SellTree(player, msg.Target)
+		case "bot":
+			room.UseBot()
 		}
 	}
 }

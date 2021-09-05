@@ -1,13 +1,13 @@
-package main
+package bot
 
 import (
 	"sort"
 )
 
-var board = NewBoard()
-
 type Board struct {
-	Map map[Coord]Cell
+	Map           map[Coord]Cell
+	Cells         []Cell
+	GoodSeedSpots [][]Cell
 	// Coordinates are ordered by Cell Index
 	Coords []Coord
 	Index  int8
@@ -15,7 +15,7 @@ type Board struct {
 
 const MapRingCount = 3
 
-func NewBoard() Board {
+func NewBoard() *Board {
 	b := Board{
 		Map: map[Coord]Cell{},
 	}
@@ -55,7 +55,21 @@ func NewBoard() Board {
 		b.Coords = append(b.Coords, pair.coord)
 	}
 
-	return b
+	for _, cell := range b.Map {
+		b.Cells = append(b.Cells, cell)
+	}
+	sort.Slice(b.Cells, func(i, j int) bool {
+		return b.Cells[i].Index < b.Cells[j].Index
+	})
+	for coord, cell := range b.Map {
+		cell.Neighbors = b.GetNeighborIds(coord)
+		b.Cells[cell.Index] = cell
+		b.Map[coord] = cell
+	}
+
+	CalculateGoodSeedSpots(&b)
+
+	return &b
 }
 
 func (b *Board) GetNeighborIds(coord Coord) []int8 {

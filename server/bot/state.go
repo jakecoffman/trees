@@ -1,4 +1,4 @@
-package main
+package bot
 
 import (
 	"fmt"
@@ -33,6 +33,8 @@ func (t Trees) String() string {
 }
 
 type State struct {
+	Board *Board
+
 	Sun       Sun `json:"-"`
 	Day       int8
 	Nutrients int8
@@ -135,7 +137,7 @@ func (g *State) GeneratePossibleMoves() []Action {
 		if !tree.IsMine {
 			continue
 		}
-		coord := board.Coords[i]
+		coord := g.Board.Coords[i]
 
 		if g.CanSeedFrom(tree, seedCost) {
 			for _, targetCoord := range InRange(coord, tree.Size) {
@@ -143,7 +145,7 @@ func (g *State) GeneratePossibleMoves() []Action {
 					continue
 				}
 				index := CoordToIndex(targetCoord)
-				targetCell := Cells[index]
+				targetCell := g.Board.Cells[index]
 				if g.CanSeedTo(targetCell) {
 					possibilities.Push(Action{
 						Type:          Seed,
@@ -243,22 +245,15 @@ func (g *State) GrowthCost(tree Tree) int8 {
 	return g.Cost(targetSize)
 }
 
-var Pool = make([]State, 500_000)
-var poolCursor int
-
-func init() {
-	for i := 0; i < len(Pool); i++ {
-		Pool[i].Trees = make([]Tree, 37)
-		Pool[i].Num = make([]int8, SizeLarge+1)
-	}
-}
-
 // Clone clones the game state
 func (g *State) Clone() *State {
 	//start := time.Now()
 
-	state := &Pool[poolCursor]
-	poolCursor++
+	state := &State{
+		Board: g.Board, // board is immutable
+		Trees: make([]Tree, 37),
+		Num:   make([]int8, SizeLarge+1),
+	}
 
 	//if time.Now().Sub(start) > 6 * time.Millisecond {
 	//	log.Println("TOOK TOO LONG:", time.Now().Sub(start))
@@ -297,7 +292,7 @@ func (g *State) DoGrow(action Action) *State {
 	newState := g.Clone()
 
 	//coord := board.Coords[action.TargetCellIdx]
-	cell := Cells[action.TargetCellIdx]
+	cell := g.Board.Cells[action.TargetCellIdx]
 	tree := newState.Trees[cell.Index]
 	//if tree == nil {
 	//	panic("Tree not found")
@@ -343,7 +338,7 @@ func (g *State) DoComplete(action Action) *State {
 	newState := g.Clone()
 
 	//coord := board.Coords[action.TargetCellIdx]
-	cell := Cells[action.TargetCellIdx]
+	cell := g.Board.Cells[action.TargetCellIdx]
 	tree := newState.Trees[cell.Index]
 	//if tree == nil {
 	//	panic("Tree not found")
@@ -388,8 +383,8 @@ func (g *State) DoSeed(action Action) *State {
 	//targetCoord := board.Coords[action.TargetCellIdx]
 	//sourceCoord := board.Coords[action.SourceCellIdx]
 
-	targetCell := Cells[action.TargetCellIdx]
-	sourceCell := Cells[action.SourceCellIdx]
+	targetCell := g.Board.Cells[action.TargetCellIdx]
+	sourceCell := g.Board.Cells[action.SourceCellIdx]
 
 	//if _, ok := g.Trees[targetCell.Index]; ok {
 	//	panic("Cell is not empty")
@@ -440,7 +435,7 @@ func (g *State) GatherSun() *State {
 	}
 	newState := g.Clone()
 	newState.Sun = newState.Sun.Move()
-	newState.Shadows = newState.Sun.CalculateShadows(newState.Trees)
+	newState.Shadows = newState.Sun.CalculateShadows(g.Board, newState.Trees)
 
 	smallSun := bits.OnesCount64(g.MyTrees & g.Smalls & ^(g.Shadows[0][SizeSmall]))
 	mediumSun := bits.OnesCount64(g.MyTrees & g.Mediums & ^(g.Shadows[0][SizeMedium]))

@@ -2,6 +2,7 @@ package arcade
 
 import (
 	"fmt"
+	"github.com/jakecoffman/trees/server/bot"
 	"github.com/jakecoffman/trees/server/game"
 	"log"
 	"runtime/debug"
@@ -24,6 +25,7 @@ type Room struct {
 
 	input                chan Cmd
 	finalDayNotification bool
+	playingBot           bool
 }
 
 func NewRoom() *Room {
@@ -122,6 +124,13 @@ func (r *Room) loop() {
 				return
 			}
 		}
+		if r.playingBot && moves[1] == nil {
+			move := doBotMove(r.State)
+			moves[1] = move
+			if moves[0] != nil {
+				continue
+			}
+		}
 		select {
 		case cmd := <-r.input:
 			switch cmd.Kind {
@@ -178,6 +187,47 @@ func (r *Room) loop() {
 			}
 		}
 	}
+}
+
+func doBotMove(state *game.State) *game.Action {
+	botState := &bot.State{
+		Board:         bot.NewBoard(),
+		Sun:           bot.Sun{Orientation: int8(state.Sun.Orientation)},
+		Day:           int8(state.Day),
+		Nutrients:     int8(state.Nutrients),
+		MySun:         int8(state.Energy[1]),
+		OpponentSun:   int8(state.Energy[0]),
+		MyScore:       state.Score[1],
+		OpponentScore: state.Score[0],
+		Trees:         make([]bot.Tree, 37),
+		Num:           make([]int8, bot.SizeLarge+1),
+	}
+	for _, v := range state.Trees {
+		botState.AddTree(bot.Tree{
+			CellIndex: int8(v.CellIndex),
+			Size:      int8(v.Size),
+			IsMine:    v.Owner == 1,
+			IsDormant: v.IsDormant,
+			Exists:    true,
+		})
+	}
+	// copy over the unusables
+	for i, v := range state.Board.Cells {
+		if v.Richness == game.RichnessUnusable {
+			botState.Board.Cells[i].Richness = game.RichnessUnusable
+		}
+	}
+	botState.Shadows = botState.Sun.CalculateShadows(botState.Board, botState.Trees)
+	nextMove, _, _ := bot.Chokudai(botState, &bot.Settings{
+		MinimalEconomy: 16,
+		MaximumEconomy: 25,
+	})
+	move := &game.Action{
+		Type:          int(nextMove.Type),
+		TargetCellIdx: int(nextMove.TargetCellIdx),
+		SourceCellIdx: int(nextMove.SourceCellIdx),
+	}
+	return move
 }
 
 func (r *Room) execute(moves [2]*game.Action) ([2]*game.Action, bool) {
@@ -327,4 +377,16 @@ func (r *Room) quit(quitter *Player) {
 		p.Room = nil
 	}
 	Building.Shut(r)
+}
+
+func (r *Room) UseBot() {
+	if len(r.Players) == 1 {
+		log.Println("bot time")
+		r.playingBot = true
+		r.Join(&Player{
+			id:   "bot",
+			ws:   nil,
+			Room: r,
+		})
+	}
 }

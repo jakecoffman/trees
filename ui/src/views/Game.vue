@@ -8,6 +8,7 @@
     <modal :open="game && game.Players.length !== 2">
       <p>Waiting for opponent</p>
       <p>Room code {{game.Code}}</p>
+      <button @click="playVsBot()">Play against bot</button>
     </modal>
     <modal :open="conn !== 'Open'">
       <p>{{conn}}</p>
@@ -113,6 +114,9 @@ export default {
     select(index) {
       this.showFooter = true
       this.selection = index
+    },
+    playVsBot() {
+      this.ws.send(JSON.stringify({Kind: "bot"}))
     }
   }
 }

@@ -1,4 +1,4 @@
-package main
+package bot
 
 // Item is a thing in the queue
 type Item struct {
@@ -13,11 +13,10 @@ type Item struct {
 // A PriorityQueue implements heap.Interface and holds Items.
 type PriorityQueue struct {
 	arr []*Item
-	cur int
 }
 
 func (pq PriorityQueue) Len() int {
-	return pq.cur
+	return len(pq.arr)
 }
 
 func (pq PriorityQueue) Less(i, j int) bool {
@@ -32,13 +31,17 @@ func (pq PriorityQueue) Swap(i, j int) {
 }
 
 func (pq *PriorityQueue) Push(x interface{}) {
+	n := len(pq.arr)
 	item := x.(*Item)
-	item.Index = pq.cur
-	pq.arr[pq.cur] = item
-	pq.cur++
+	item.Index = n
+	pq.arr = append(pq.arr, item)
 }
 
 func (pq *PriorityQueue) Pop() interface{} {
-	pq.cur--
-	return pq.arr[pq.cur]
+	n := len(pq.arr)
+	item := pq.arr[n-1]
+	pq.arr[n-1] = nil // avoid memory leak
+	item.Index = -1   // for safety
+	pq.arr = pq.arr[0 : n-1]
+	return item
 }

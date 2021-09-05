@@ -1,4 +1,4 @@
-package main
+package bot
 
 const (
 	RichnessUnusable = iota
@@ -6,8 +6,6 @@ const (
 	RichnessMedium
 	RichnessHigh
 )
-
-var Cells []Cell
 
 type Cell struct {
 	Index     int8

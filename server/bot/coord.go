@@ -1,4 +1,4 @@
-package main
+package bot
 
 import "fmt"
 
@@ -8,9 +8,7 @@ type Coord struct {
 	x, y, z int8
 }
 
-var GoodSeedSpots [][]Cell
-
-func CalculateGoodSeedSpots() {
+func CalculateGoodSeedSpots(b *Board) {
 	// compute good seed spots
 	compute := func(c Coord) []Coord {
 		return []Coord{
@@ -35,19 +33,19 @@ func CalculateGoodSeedSpots() {
 			c.Add(Coord{+3, -1, -2}),
 		}
 	}
-	for _, cell := range Cells {
+	for _, cell := range b.Cells {
 		var spots []Cell
-		coord := board.Coords[cell.Index]
+		coord := b.Coords[cell.Index]
 
 		possibles := compute(coord)
 		for _, c := range possibles {
 			// if it's on the board
-			if cell, ok := board.Map[c]; ok {
+			if cell, ok := b.Map[c]; ok {
 				spots = append(spots, cell)
 			}
 		}
 
-		GoodSeedSpots = append(GoodSeedSpots, spots)
+		b.GoodSeedSpots = append(b.GoodSeedSpots, spots)
 	}
 }
 

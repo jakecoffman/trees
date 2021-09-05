@@ -1,4 +1,4 @@
-package main
+package bot
 
 import (
 	"container/heap"
@@ -9,40 +9,13 @@ import (
 
 const chokudaiMaxTurns = 10
 const chokudaiWidth = 100
-
-var ItemPool = make([]Item, 1_000_000)
-var itemPoolCur int
-
-func NewItem(state *State, priority int) *Item {
-	item := &ItemPool[itemPoolCur]
-	itemPoolCur++
-	item.State = state
-	item.Priority = priority
-	item.Index = 0
-	return item
-}
-
-var queues = make([]PriorityQueue, chokudaiMaxTurns+1)
-
-func init() {
-	for i := 0; i < len(queues); i++ {
-		queues[i].arr = make([]*Item, 500_000)
-	}
-}
-
-const msLimit = 95
+const msLimit = 1000
 
 // Chokudai search: returns best action and score of the best end state
 func Chokudai(first *State, s *Settings) (Action, *State, []*State) {
-	{ // Reset!
-		poolCursor = 0
-		itemPoolCur = 0
-		for i := 0; i < len(queues); i++ {
-			queues[i].cur = 0
-		}
-	}
+	var queues = make([]PriorityQueue, chokudaiMaxTurns+1)
 	queue := &queues[0]
-	heap.Push(queue, NewItem(first, 0))
+	heap.Push(queue, &Item{State: first})
 	width := chokudaiWidth
 
 	processed := 1
@@ -114,7 +87,7 @@ func Chokudai(first *State, s *Settings) (Action, *State, []*State) {
 					nextState.GeneratedByAction = nextAction
 					nextState.CameFrom = current.State
 					p := nextState.Priority(s)
-					heap.Push(&queues[t+1], NewItem(nextState, p))
+					heap.Push(&queues[t+1], &Item{State: nextState, Priority: p})
 					if t+1 < chokudaiMaxTurns {
 						processed++
 					}
