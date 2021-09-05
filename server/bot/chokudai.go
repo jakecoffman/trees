@@ -9,7 +9,7 @@ import (
 
 const chokudaiMaxTurns = 10
 const chokudaiWidth = 100
-const msLimit = 1000
+const msLimit = 100
 
 // Chokudai search: returns best action and score of the best end state
 func Chokudai(first *State, s *Settings) (Action, *State, []*State) {
