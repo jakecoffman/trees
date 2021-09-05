@@ -1,5 +1,13 @@
 <template>
   <header v-if="game">
+    <div class="score-mini">
+      <div class="orange">
+        {{ you === 0 ? 'You' : 'Opponent' }}: {{game.State.Score[0]}} ☀️{{ game.State.Energy[0] }}
+      </div>
+      <div class="blue">
+        {{ you === 1 ? 'You' : 'Opponent' }}: {{game.State.Score[1]}} ☀️{{ game.State.Energy[1] }}
+      </div>
+    </div>
     <div class="score">
       <fieldset class="orange">
         <legend>{{ you === 0 ? 'You' : 'Opponent' }}</legend>
@@ -52,5 +60,18 @@ export default {
 fieldset {
   border: 1px solid;
   border-radius: 5px;
+}
+.score-mini {
+  display: none;
+}
+@media (max-height: 600px) {
+  .score {
+    display: none;
+  }
+  .score-mini {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 }
 </style>
