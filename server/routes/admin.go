@@ -11,8 +11,8 @@ var Admin = crud.Spec{
 	Path:        "/count",
 	Handler:     count,
 	Description: "",
-	Tags:        []string{"Login"},
-	Summary:     "Checks ",
+	Tags:        []string{"Admin"},
+	Summary:     "Returns how many people are connected",
 	Validate:    crud.Validate{},
 }
 
