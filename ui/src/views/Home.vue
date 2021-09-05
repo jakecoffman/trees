@@ -36,7 +36,7 @@
     <transition name="slide">
       <modal v-model="join">
         <p>Enter the ID of the game</p>
-        <input type="number" v-model="code" ref="codeEntry" :disabled="code.toString().length === 6">
+        <input type="tel" pattern="[0-9]*" v-model="code" ref="codeEntry" :disabled="code.toString().length === 6">
         <footer class="modal-footer">
           <button @click="join = false; code = ''">
             Cancel

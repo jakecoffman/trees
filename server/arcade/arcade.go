@@ -17,6 +17,13 @@ var Building = bldg{
 	games:   map[string]*Room{},
 }
 
+func (b *bldg) Counts() (int, int) {
+	b.mutex.RLock()
+	defer b.mutex.RUnlock()
+
+	return len(b.players), len(b.games)
+}
+
 func (b *bldg) GetPlayer(playerId string) *Player {
 	b.mutex.RLock()
 	defer b.mutex.RUnlock()

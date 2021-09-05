@@ -30,6 +30,9 @@ func main() {
 	if err := r.Add(routes.Room...); err != nil {
 		log.Fatal(err)
 	}
+	if err := r.Add(routes.Admin); err != nil {
+		log.Fatal(err)
+	}
 
 	log.Println("Serving http://127.0.0.1:8454")
 	if err := r.Serve("127.0.0.1:8454"); err != nil {
