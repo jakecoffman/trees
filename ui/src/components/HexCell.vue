@@ -1,14 +1,7 @@
 <template>
   <g class="cell" @click="cellClick">
     <polygon class="hex" points="100,0 50,-87 -50,-87 -100,-0 -50,87 50,87" :class="polyClass"></polygon>
-    <image v-if="href"
-           transform="rotate(30)"
-           :x="offsetX"
-           :y="offsetY"
-           :width="size"
-           :height="size"
-           :class="{'no-sun': tree?.Size <= shadow}"
-           :href="href" />
+    <image v-if="href" transform="rotate(30)" :x="offsetX" :y="offsetY" :width="size" :height="size" :href="href" />
     <text v-if="tree?.IsDormant" transform="rotate(30) translate(-50, 30)" style="font-size: 72pt">💤</text>
     <g v-if="debug">
       <text transform="rotate(-90) translate(60, 0) rotate(90) rotate(30) translate(0,10)" class="q-coord">
@@ -58,10 +51,6 @@ export default {
         return {selected: true}
       }
       const classes = {}
-
-      if (this.shadow > 0) {
-        classes.shadow = true
-      }
 
       switch (this.cell.Richness) {
         case 0:
@@ -142,13 +131,6 @@ export default {
 }
 .richHigh {
   fill: green;
-}
-.shadow {
-  /*fill: #3d3d3d !important;*/
-  filter: contrast(0%) brightness(60%);
-}
-.no-sun {
-  filter: brightness(50%) !important;
 }
 .hex {
   transition: .5s filter linear;

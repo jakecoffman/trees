@@ -14,6 +14,9 @@
                 @select="select"
             />
           </g>
+          <g class="shadow" v-for="(hex, index) of grid" :key="index" :transform="`translate(${hex.tX},${hex.tY})`">
+            <tree-shadow :index="index" :game="game"/>
+          </g>
         </g>
       </g>
     </svg>
@@ -23,9 +26,11 @@
 import HexCell from "./HexCell.vue";
 import {grid} from "../assets/grid";
 import TheSun from "./TheSun.vue";
+import TreeShadow from "./TreeShadow.vue";
 
 export default {
   components: {
+    TreeShadow,
     TheSun,
     HexCell
   },
@@ -49,10 +54,12 @@ export default {
   flex-direction: column;
   align-items: center;
 }
+
 .board {
   max-width: 600px;
   max-height: 90vh;
 }
+
 .sun {
   position: absolute;
   right: 0;
