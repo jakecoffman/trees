@@ -2,7 +2,7 @@
   <g v-if="tree && tree.Size === showSize" :transform="`rotate(${rotation})`" class="shadow">
     <image class="shadow" v-if="tree && tree.Size > 0"
            style="opacity: 70%;"
-           :transform="`rotate(30) translate(0, -50) scale(${scale}, 1)`"
+           :transform="`rotate(30) translate(25, -50) scale(${scale}, 1)`"
            width="100"
            height="100"
            href="/cone.svg"/>
@@ -33,7 +33,7 @@ export default {
         case 2:
           return 4
         case 3:
-          return 6
+          return 5.6
       }
     }
   }

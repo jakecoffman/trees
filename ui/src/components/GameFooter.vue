@@ -191,8 +191,9 @@ footer {
   align-items: center;
 }
 .settings {
-  position: absolute;
+  position: fixed;
   right: 1rem;
+  bottom: 1rem;
   width: 25px;
   height: 25px;
   cursor: pointer;
