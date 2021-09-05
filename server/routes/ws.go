@@ -66,8 +66,8 @@ func wsHandler(ws *lib.SafetySocket, playerId, code string) {
 			log.Println("Player disconnected")
 		}
 	}()
-	atomic.AddUint64(&arcade.ActiveWsConnections, 1)
-	defer atomic.AddUint64(&arcade.ActiveWsConnections, -1)
+	atomic.AddInt64(&arcade.ActiveWsConnections, 1)
+	defer atomic.AddInt64(&arcade.ActiveWsConnections, -1)
 
 	player := arcade.Building.Enter(playerId, ws)
 	defer arcade.Building.Disconnect(player)

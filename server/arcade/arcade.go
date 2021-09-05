@@ -6,7 +6,7 @@ import (
 	"sync"
 )
 
-var ActiveWsConnections uint64
+var ActiveWsConnections int64
 
 type bldg struct {
 	mutex   sync.RWMutex

@@ -18,7 +18,7 @@ var Admin = crud.Spec{
 
 type usersResponse struct {
 	PlayerCount, GameCount int
-	ActiveWsConnections    uint64
+	ActiveWsConnections    int64
 }
 
 func count(c *gin.Context) {
