@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jakecoffman/crud"
 	adapter "github.com/jakecoffman/crud/adapters/gin-adapter"
@@ -18,6 +19,9 @@ func init() {
 
 func main() {
 	engine := gin.Default()
+	// for now, allow all origins
+	engine.Use(cors.Default())
+
 	a := &adapter.Adapter{Engine: engine}
 	r := crud.NewRouter("Trees", "1.0.0", a)
 	r.Swagger.BasePath = "/api"
