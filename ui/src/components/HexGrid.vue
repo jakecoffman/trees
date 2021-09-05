@@ -70,7 +70,7 @@ export default {
 
 .board {
   max-width: 600px;
-  max-height: 90vh;
+  max-height: 60vh;
 }
 
 .sun {

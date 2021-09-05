@@ -11,6 +11,9 @@ h1, h2, h3, h4 {
   margin: 0;
   padding: 0;
 }
+html {
+  font-size: 16pt;
+}
 body {
   margin: 0;
   background: black;
@@ -50,5 +53,16 @@ button {
   font-size: 16pt;
   padding: .25rem 1rem;
   border-radius: 5px;
+}
+@media (max-height: 600px) {
+  html {
+    font-size: 6px;
+  }
+  body {
+    font-size: 12pt;
+  }
+  button {
+    font-size: 12pt;
+  }
 }
 </style>
