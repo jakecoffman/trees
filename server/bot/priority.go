@@ -93,7 +93,7 @@ func (g *State) Priority(s *Settings) int {
 func (g *State) SunNextRound() (earning int) {
 	for i := 0; i < 37; i++ {
 		t := g.Trees[i]
-		if t.Exists && t.IsMine && !IsSet(g.Shadows[0][t.Size], t.CellIndex) {
+		if t.Exists && t.IsMine && !IsSet(g.Shadows[1][t.Size], t.CellIndex) {
 			earning += int(t.Size) * 2 // multiplier?
 		}
 	}

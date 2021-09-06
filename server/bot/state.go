@@ -228,7 +228,7 @@ func (g *State) CanSeedFrom(tree Tree, seedCost int8) bool {
 	return seedCost <= g.MySun && tree.Size > SizeSeed && !tree.IsDormant
 }
 
-func (g *State) CanSeedTo(target Cell) bool {
+func (g *State) CanSeedTo(target *Cell) bool {
 	if target.Richness == RichnessUnusable {
 		return false
 	}
@@ -273,7 +273,7 @@ func (g *State) Clone() *State {
 	//state.Trees = newTrees
 	//state.Shadows = make([]int8, 37)
 	//copy(state.Shadows, g.Shadows)
-	state.Shadows = g.Shadows // shadows only change when WAIT
+	state.Shadows = g.Shadows // shadows are immutable
 	state.CameFrom = nil
 
 	state.MyTrees = g.MyTrees

@@ -34,7 +34,7 @@ func CalculateGoodSeedSpots(b *Board) {
 		}
 	}
 	for _, cell := range b.Cells {
-		var spots []Cell
+		var spots []*Cell
 		coord := b.Coords[cell.Index]
 
 		possibles := compute(coord)

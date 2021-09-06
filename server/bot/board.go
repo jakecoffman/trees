@@ -5,9 +5,9 @@ import (
 )
 
 type Board struct {
-	Map           map[Coord]Cell
-	Cells         []Cell
-	GoodSeedSpots [][]Cell
+	Map           map[Coord]*Cell
+	Cells         []*Cell
+	GoodSeedSpots [][]*Cell
 	// Coordinates are ordered by Cell Index
 	Coords []Coord
 	Index  int8
@@ -17,7 +17,7 @@ const MapRingCount = 3
 
 func NewBoard() *Board {
 	b := Board{
-		Map: map[Coord]Cell{},
+		Map: map[Coord]*Cell{},
 	}
 
 	center := Coord{}
@@ -42,7 +42,7 @@ func NewBoard() *Board {
 
 	type Pair struct {
 		coord Coord
-		cell  Cell
+		cell  *Cell
 	}
 	var pairs []Pair
 	for coord, cell := range b.Map {
@@ -86,7 +86,7 @@ func (b *Board) GetNeighborIds(coord Coord) []int8 {
 }
 
 func (b *Board) AddCell(coord Coord, richness int8) {
-	b.Map[coord] = Cell{
+	b.Map[coord] = &Cell{
 		Index:    b.Index,
 		Richness: richness,
 	}
