@@ -1,0 +1,8 @@
+{
+  "name": "Tree Game",
+  "short_name": "Trees",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#f22b29"
+}
