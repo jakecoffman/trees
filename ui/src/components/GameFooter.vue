@@ -2,12 +2,12 @@
   <footer>
     <img class="settings" src="/gear.svg" @click="openSettings = !openSettings">
 
-    <div v-if="locked">Waiting for opponent's move</div>
-    <div v-if="selection !== null && !seedSource">
+    <div v-if="locked && game.State.Day < 24">Waiting for opponent's move</div>
+    <div v-if="selection !== null && seedSource === null">
       {{richnessText}} {{treeText}}
     </div>
     <div v-if="game.State.Day < 24" class="buttons">
-      <span v-if="tree && tree.Owner === you && !tree.IsDormant && !seedSource">
+      <span v-if="tree && tree.Owner === you && !tree.IsDormant && seedSource === null">
         <button v-if="tree.Size >= 1" @click="seed1(selection)" :disabled="locked || seedCost > game.State.Energy[you]">
           Seed (Cost {{seedCost}})
         </button>
@@ -18,14 +18,14 @@
           Sell (Cost {{growthCost}})
         </button>
       </span>
-      <span v-if="!tree && seedSource && cell?.Richness > 0">
+      <span v-if="!tree && seedSource !== null && cell?.Richness > 0">
         <button @click="seed2(selection)">Seed Here</button>
       </span>
-      <div v-if="seedSource" class="flex column center">
+      <div v-if="seedSource !== null" class="flex column center">
         <p v-if="tree || cell?.Richness === 0">Select a location to seed</p>
         <button @click="seedSource = null">Cancel Seed</button>
       </div>
-      <button @click="endTurn()" v-if="!seedSource" :disabled="locked">End Turn</button>
+      <button @click="endTurn()" v-if="seedSource === null" :disabled="locked">End Turn</button>
     </div>
     <span v-else>
       <span v-if="game.State.Score[0] === game.State.Score[1]">Tie Game!</span>
