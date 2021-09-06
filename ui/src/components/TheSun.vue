@@ -1,5 +1,5 @@
 <template>
-  <svg id="sun" viewBox="0 0 497 497" width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+  <svg id="sun" ref="sun" viewBox="0 0 497 497" width="512" height="512" xmlns="http://www.w3.org/2000/svg">
     <!-- Le sun -->
     <circle fill="#ffd900" cx="248.5" cy="248.5" r="149.1"/>
     <!-- Sun shading -->
@@ -49,6 +49,23 @@ export default {
   watch: {
     day() {
       this.rotation = this.day * -60
+    }
+  },
+  beforeMount() {
+    // prevent animations from going bananas after being in background for a while
+    window.addEventListener('focus', this.unpause)
+    window.addEventListener('blur', this.pause)
+  },
+  beforeUnmount() {
+    window.removeEventListener('focus', this.unpause)
+    window.removeEventListener('blur', this.pause)
+  },
+  methods: {
+    pause() {
+      this.$refs.sun.pauseAnimations()
+    },
+    unpause() {
+      this.$refs.sun.unpauseAnimations()
     }
   }
 }
