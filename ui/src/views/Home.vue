@@ -111,6 +111,7 @@ export default {
 <style scoped>
 .welcome {
   margin: 1rem;
+  overflow: hidden;
 }
 .modal-footer {
   margin-top: 1rem;
