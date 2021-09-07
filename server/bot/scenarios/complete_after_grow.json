@@ -1,0 +1,270 @@
+{
+  "Day": 11,
+  "Nutrients": 19,
+  "Trees": [
+    {
+      "CellIndex": 0,
+      "Size": 3,
+      "IsMine": true,
+      "IsDormant": false,
+      "Exists": true
+    },
+    {
+      "CellIndex": 0,
+      "Size": 0,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": false
+    },
+    {
+      "CellIndex": 0,
+      "Size": 0,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": false
+    },
+    {
+      "CellIndex": 0,
+      "Size": 0,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": false
+    },
+    {
+      "CellIndex": 0,
+      "Size": 0,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": false
+    },
+    {
+      "CellIndex": 5,
+      "Size": 2,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": true
+    },
+    {
+      "CellIndex": 0,
+      "Size": 0,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": false
+    },
+    {
+      "CellIndex": 0,
+      "Size": 0,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": false
+    },
+    {
+      "CellIndex": 8,
+      "Size": 2,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": true
+    },
+    {
+      "CellIndex": 0,
+      "Size": 0,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": false
+    },
+    {
+      "CellIndex": 10,
+      "Size": 3,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": true
+    },
+    {
+      "CellIndex": 0,
+      "Size": 0,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": false
+    },
+    {
+      "CellIndex": 12,
+      "Size": 3,
+      "IsMine": true,
+      "IsDormant": false,
+      "Exists": true
+    },
+    {
+      "CellIndex": 0,
+      "Size": 0,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": false
+    },
+    {
+      "CellIndex": 14,
+      "Size": 3,
+      "IsMine": true,
+      "IsDormant": false,
+      "Exists": true
+    },
+    {
+      "CellIndex": 0,
+      "Size": 0,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": false
+    },
+    {
+      "CellIndex": 16,
+      "Size": 2,
+      "IsMine": true,
+      "IsDormant": false,
+      "Exists": true
+    },
+    {
+      "CellIndex": 0,
+      "Size": 0,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": false
+    },
+    {
+      "CellIndex": 0,
+      "Size": 0,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": false
+    },
+    {
+      "CellIndex": 19,
+      "Size": 2,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": true
+    },
+    {
+      "CellIndex": 0,
+      "Size": 0,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": false
+    },
+    {
+      "CellIndex": 0,
+      "Size": 0,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": false
+    },
+    {
+      "CellIndex": 22,
+      "Size": 3,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": true
+    },
+    {
+      "CellIndex": 0,
+      "Size": 0,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": false
+    },
+    {
+      "CellIndex": 24,
+      "Size": 2,
+      "IsMine": true,
+      "IsDormant": false,
+      "Exists": true
+    },
+    {
+      "CellIndex": 25,
+      "Size": 1,
+      "IsMine": true,
+      "IsDormant": false,
+      "Exists": true
+    },
+    {
+      "CellIndex": 0,
+      "Size": 0,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": false
+    },
+    {
+      "CellIndex": 27,
+      "Size": 3,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": true
+    },
+    {
+      "CellIndex": 28,
+      "Size": 2,
+      "IsMine": true,
+      "IsDormant": false,
+      "Exists": true
+    },
+    {
+      "CellIndex": 0,
+      "Size": 0,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": false
+    },
+    {
+      "CellIndex": 0,
+      "Size": 0,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": false
+    },
+    {
+      "CellIndex": 31,
+      "Size": 2,
+      "IsMine": true,
+      "IsDormant": false,
+      "Exists": true
+    },
+    {
+      "CellIndex": 32,
+      "Size": 0,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": true
+    },
+    {
+      "CellIndex": 0,
+      "Size": 0,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": false
+    },
+    {
+      "CellIndex": 34,
+      "Size": 1,
+      "IsMine": true,
+      "IsDormant": true,
+      "Exists": true
+    },
+    {
+      "CellIndex": 35,
+      "Size": 1,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": true
+    },
+    {
+      "CellIndex": 0,
+      "Size": 0,
+      "IsMine": false,
+      "IsDormant": false,
+      "Exists": false
+    }
+  ],
+  "MySun": 12,
+  "OpponentSun": 7,
+  "MyScore": 0,
+  "OpponentScore": 22,
+  "OpponentIsWaiting": false
+}

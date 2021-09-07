@@ -48,32 +48,14 @@ func TestTwoPlayers(t *testing.T) {
 		}
 		RandomizeBoard(state)
 		InitStartingTrees(state)
-		state.Shadows = state.Sun.CalculateShadows(state.Board, state.Trees)
 		state = GatherSun(state)
-		var err error
 
-		var myLastAction, oppLastAction Action
 		for state.Day < 23 {
+			myAction := nextAction(state, mySettings)
 
-			var myAction Action
-			if myLastAction.Type == Wait && oppLastAction.Type != Wait {
-				myAction = myLastAction
-			} else {
-				myAction = nextAction(state, mySettings)
-			}
-
-			var oppAction Action
-			if oppLastAction.Type == Wait && myLastAction.Type != Wait {
-				oppAction = oppLastAction
-			} else {
-				swapSides(state)
-				oppAction = nextAction(state, oppSettings)
-				swapSides(state)
-			}
-
-			log.Println(myAction, oppAction)
-
-			myLastAction, oppLastAction = myAction, oppAction
+			swapSides(state)
+			oppAction := nextAction(state, oppSettings)
+			swapSides(state)
 
 			if myAction.Type == Seed && oppAction.Type == Seed {
 				if myAction.TargetCellIdx == oppAction.TargetCellIdx {
@@ -91,49 +73,31 @@ func TestTwoPlayers(t *testing.T) {
 				continue
 			}
 			if myAction.Type == Seed {
-				state, err = ApplySeed(state, &myAction)
-				if err != nil {
-					panic(err)
-				}
+				state = state.DoSeed(myAction)
 			}
 			if oppAction.Type == Seed {
 				swapSides(state)
-				state, err = ApplySeed(state, &oppAction)
-				if err != nil {
-					panic(err)
-				}
+				state = state.DoSeed(oppAction)
 				swapSides(state)
 			}
 			var nutrientsLost int8
 			if myAction.Type == Complete {
 				nutrientsLost++
-				state, err = ApplyComplete(state, &myAction)
-				if err != nil {
-					panic(err)
-				}
+				state = state.DoComplete(myAction)
 			}
 			if oppAction.Type == Complete {
 				nutrientsLost++
 				swapSides(state)
-				state, err = ApplyComplete(state, &oppAction)
-				if err != nil {
-					panic(err)
-				}
+				state = state.DoComplete(oppAction)
 				swapSides(state)
 			}
 			state.Nutrients = max(0, state.Nutrients-nutrientsLost)
 			if myAction.Type == Grow {
-				state, err = ApplyGrow(state, &myAction)
-				if err != nil {
-					panic(err)
-				}
+				state = state.DoGrow(myAction)
 			}
 			if oppAction.Type == Grow {
 				swapSides(state)
-				state, err = ApplyGrow(state, &oppAction)
-				if err != nil {
-					panic(err)
-				}
+				state = state.DoGrow(oppAction)
 				swapSides(state)
 			}
 		}
@@ -282,6 +246,9 @@ func GatherSun(s *State) *State {
 	state.Shadows = state.Sun.CalculateShadows(s.Board, state.Trees)
 	for i := range state.Trees {
 		tree := state.Trees[i]
+		if !tree.Exists {
+			continue
+		}
 		state.Trees[i].IsDormant = false
 		if tree.IsMine {
 			if !IsSet(state.Shadows[0][tree.Size], tree.CellIndex) {
@@ -311,18 +278,21 @@ func nextAction(state *State, s Settings) Action {
 	//log.Println(state)
 	//log.Println(state.Trees)
 
-	start := time.Now()
+	//start := time.Now()
 
 	myAction, _, _ := Chokudai(state, &s)
+	//for _, p := range path {
+	//	fmt.Print(p.GeneratedByAction, " ")
+	//}
 
-	diff := time.Now().Sub(start)
-	if diff > 97*time.Millisecond {
-		log.Println(time.Now().Sub(start), state.Day)
-	}
-	if diff >= 100*time.Millisecond {
-		log.Println("TIMED OUT:", time.Now().Sub(start))
-		myAction = Action{Type: Wait}
-	}
+	//diff := time.Now().Sub(start)
+	//if diff > 97*time.Millisecond {
+	//	log.Println(time.Now().Sub(start), state.Day)
+	//}
+	//if diff >= 100*time.Millisecond {
+	//	log.Println("TIMED OUT:", time.Now().Sub(start))
+	//	myAction = Action{Type: Wait}
+	//}
 	return myAction
 }
 
@@ -379,7 +349,7 @@ func cost(isMine bool, size int8, state *State) int8 {
 	c := treeBaseCost[size]
 	for i := range state.Trees {
 		tree := state.Trees[i]
-		if tree.Size == size && isMine {
+		if tree.Exists && tree.Size == size && isMine {
 			c++
 		}
 	}

@@ -40,7 +40,6 @@ func TestOnePlayer(t *testing.T) {
 		InitStartingTrees(state)
 		state.Shadows = state.Sun.CalculateShadows(state.Board, state.Trees)
 		state = GatherSun(state)
-		var err error
 
 		// sanity
 		//log.Println(state.MySun)
@@ -50,20 +49,10 @@ func TestOnePlayer(t *testing.T) {
 		//	}
 		//}
 
-		var myLastAction, oppLastAction Action
 		for state.Day < 23 {
-			log.Println(state.GeneratePossibleMoves())
+			//log.Println(state.GeneratePossibleMoves())
 
-			var myAction Action
-			if myLastAction.Type == Wait && oppLastAction.Type != Wait {
-				myAction = myLastAction
-			} else {
-				myAction = nextAction(state, mySettings)
-			}
-
-			log.Println(myAction)
-
-			myLastAction = myAction
+			myAction := nextAction(state, mySettings)
 
 			if myAction.Type == Wait {
 				state.Day++
@@ -72,25 +61,16 @@ func TestOnePlayer(t *testing.T) {
 				continue
 			}
 			if myAction.Type == Seed {
-				state, err = ApplySeed(state, &myAction)
-				if err != nil {
-					panic(err)
-				}
+				state = state.DoSeed(myAction)
 			}
 			var nutrientsLost int8
 			if myAction.Type == Complete {
 				nutrientsLost++
-				state, err = ApplyComplete(state, &myAction)
-				if err != nil {
-					panic(err)
-				}
+				state = state.DoComplete(myAction)
 			}
 			state.Nutrients = max(0, state.Nutrients-nutrientsLost)
 			if myAction.Type == Grow {
-				state, err = ApplyGrow(state, &myAction)
-				if err != nil {
-					panic(err)
-				}
+				state = state.DoGrow(myAction)
 			}
 		}
 
@@ -99,10 +79,7 @@ func TestOnePlayer(t *testing.T) {
 			//log.Println("HIGH SCORE", bestScore, mySettings)
 		}
 
-		if state.MyScore == state.OpponentScore {
-			log.Println(i, "SCORE", state.MyScore, "-", state.OpponentScore)
-		}
-
+		log.Println(i, "SCORE", state.MyScore, "-", state.OpponentScore)
 		t.Logf("Wins: %v - %v", wins[0], wins[1])
 	}
 	t.Log("Best:", bestScore, settings)

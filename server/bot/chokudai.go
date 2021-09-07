@@ -104,18 +104,18 @@ func Chokudai(first *State, s *Settings) (Action, *State, []*State) {
 		//width++
 	}
 
-	if processed == 0 {
-		log.Println("Processed all moves")
-	} else {
-		log.Println("Unprocessed:", processed)
-	}
+	//if processed == 0 {
+	//	log.Println("Processed all moves")
+	//} else {
+	//	log.Println("Unprocessed:", processed)
+	//}
 
 	//log.Println("TIME", time.Now().Sub(start))
 	//log.Println("BEST PRIORITY", best.Priority())
 	//log.Println("BEST SCORE", best.MyScore)
 	//log.Println("DEPTH", realMaxDepth)
 	//log.Println("WIDEST", width)
-	log.Println("MOVES CONSIDERED", considered)
+	//log.Println("MOVES CONSIDERED", considered)
 
 	best := heap.Pop(&queues[chokudaiMaxTurns]).(*Item)
 

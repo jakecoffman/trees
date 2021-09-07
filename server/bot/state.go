@@ -270,6 +270,8 @@ func (g *State) Clone() *State {
 	state.Nutrients = g.Nutrients
 	state.MySun = g.MySun
 	state.MyScore = g.MyScore
+	state.OpponentSun = g.OpponentSun
+	state.OpponentScore = g.OpponentScore
 	//state.Trees = newTrees
 	//state.Shadows = make([]int8, 37)
 	//copy(state.Shadows, g.Shadows)
