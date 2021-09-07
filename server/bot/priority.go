@@ -69,16 +69,21 @@ func (g *State) Priority(s *Settings) int {
 	//score += bits.OnesCount64(g.MyTrees & g.Smalls & ^g.MaxShadows)
 
 	// bonus points for shading opponent
-	score += bits.OnesCount64(g.EnemyTrees&g.Larges&g.Shadows[0][SizeLarge]&g.Shadows[1][SizeLarge]) * 5
+	score += bits.OnesCount64(g.EnemyTrees&g.Larges&g.Shadows[0][SizeLarge]) * 5
 
-	if g.Num[SizeLarge] > 4 {
-		score -= int(g.Num[SizeLarge]) * 10
+	const (
+		maxLargeTrees  = 4
+		maxMediumTrees = 4
+		maxSmallTrees  = 2
+	)
+	if g.Num[SizeLarge] > maxLargeTrees {
+		score -= (int(g.Num[SizeLarge]) - maxLargeTrees) * 10
 	}
-	if g.Num[SizeMedium] > 4 {
-		score -= int(g.Num[SizeMedium]) * 10
+	if g.Num[SizeMedium] > maxMediumTrees {
+		score -= (int(g.Num[SizeMedium]) - maxMediumTrees) * 10
 	}
-	if g.Num[SizeSmall] > 2 {
-		score -= int(g.Num[SizeSmall]) * 5
+	if g.Num[SizeSmall] > maxSmallTrees {
+		score -= (int(g.Num[SizeSmall]) - maxSmallTrees) * 5
 	}
 
 	score += g.MyScore * 100
