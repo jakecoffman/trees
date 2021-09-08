@@ -18,6 +18,11 @@
         Join Game
       </button>
     </div>
+    <div class="welcome-choices">
+      <button @click="$router.push('/tutorial')">
+        Tutorial
+      </button>
+    </div>
 
     <div style="margin-left: 50%; transform: translate(-50%, 0)">
       <the-sun :demo="true"/>
@@ -121,5 +126,8 @@ export default {
 .welcome-choices {
   display: flex;
   justify-content: center;
+}
+.welcome-choices > button {
+  margin: .25rem;
 }
 </style>
