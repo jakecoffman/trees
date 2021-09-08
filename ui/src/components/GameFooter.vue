@@ -3,7 +3,7 @@
     <img class="settings" src="/gear.svg" @click="openSettings = !openSettings">
 
     <div v-if="locked && game.State.Day < 24">Waiting for opponent's move</div>
-    <div v-else-if="!selection">
+    <div v-if="selection === null && game.State.Day < 24">
       Select the <span v-if="you" class="blue">blue</span><span v-else class="orange">orange</span> plants to play!
     </div>
     <div v-if="selection !== null && seedSource === null">
