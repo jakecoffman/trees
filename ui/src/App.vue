@@ -7,10 +7,6 @@
 export default {}
 </script>
 <style>
-@font-face {
-  font-family: 'Roboto'; /*a name to be used later*/
-  src: url('/Roboto/Roboto-Regular.ttf'); /*URL to font*/
-}
 h1, h2, h3, h4 {
   margin: 0;
   padding: 0;
