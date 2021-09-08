@@ -81,11 +81,11 @@ import { createToast } from 'mosha-vue-toastify';
 const cells = {}
 for (let i = 0; i < 37; i++) {
   if (i < 7) {
-    cells[i] = {Richness: 2}
+    cells[i] = {Richness: 3}
   } else if (i < 19) {
-    cells[i] = {Richness: 1}
+    cells[i] = {Richness: 2}
   } else {
-    cells[i] = {Richness: 0}
+    cells[i] = {Richness: 1}
   }
 }
 
