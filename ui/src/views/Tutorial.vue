@@ -3,7 +3,7 @@
     <game-header :game="game" :you="you"/>
     <hex-grid :game="game" :you="0" :selection="selection" @select="selection = $event"/>
     <p v-if="game.State.Day === 0">
-      Welcome to the tutorial! You are the orange player and you have 3 ☀️ Energy. Press "End Turn" to
+      Welcome to the tutorial! You are the orange player and you have 2 ☀️ Energy. Press "End Turn" to
       wait until the next day. Your sprout will earn you 1 ☀️ Energy.
     </p>
     <div v-if="game.State.Day === 1">
