@@ -17,13 +17,12 @@ var Ws = crud.Spec{
 	Method:      "GET",
 	Path:        "/ws",
 	Handler:     wsPreHandler,
-	Description: "",
+	Description: "Upgrades to a WebSocket connection.",
 	Tags:        []string{"Play"},
 	Summary:     "Connect to a game",
 	Validate: crud.Validate{
 		Query: crud.Object(map[string]crud.Field{
-			"action": crud.String().Enum("new", "join").Description("Create a new game or join existing one"),
-			"code":   crud.String().Min(6).Max(6).Description("The game room code"),
+			"code": crud.String().Min(6).Max(6).Description("The game room code"),
 		}),
 	},
 }
