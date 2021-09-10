@@ -3,7 +3,7 @@ pipeline {
 
     stages {
         stage('Build Server') {
-            when { changeset "server/*"}
+            when { changeset "server/**"}
             steps {
                 sh '''
                 cd server
@@ -12,7 +12,7 @@ pipeline {
             }
         }
         stage('Build UI') {
-            when { changeset "ui/*"}
+            when { changeset "ui/**"}
             steps {
                 nodejs(nodeJSInstallationName: '13') {
                     sh '''
@@ -24,7 +24,7 @@ pipeline {
                 }
             }
             stage('Deploy Server') {
-                when { changeset "server/*"}
+                when { changeset "server/**"}
                 steps {
                     sh '''
     scp server/server deploy@stldevs.com:~
@@ -38,7 +38,7 @@ pipeline {
                 }
             }
             stage('Deploy UI') {
-                when { changeset "ui/*"}
+                when { changeset "ui/**"}
                 steps {
                     sh '''
     scp -r ui/dist deploy@stldevs.com:~
