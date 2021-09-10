@@ -6,6 +6,7 @@ import Game from './views/Game.vue'
 import Rules from './views/Rules.vue'
 import NotFound from './views/NotFound.vue'
 import Tutorial from './views/Tutorial.vue'
+import Status from "./views/Status.vue"
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -15,6 +16,7 @@ export const router = createRouter({
     {path: '/games/:id', component: Game, name: 'Game'},
     {path: '/rules', component: Rules, name: 'Rules'},
     {path: '/tutorial', component: Tutorial, name: 'Tutorial'},
+    {path: '/status', component: Status, name: 'Status'},
     {path: '/:catchAll(.*)', component: NotFound, name: 'Not Found'}
   ]
 })
