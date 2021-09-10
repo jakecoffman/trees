@@ -51,7 +51,7 @@
         <button @click="$router.push('/')">Go Home</button>
       </div>
     </div>
-    <div class="tutorial-controls" v-if="!soldLargeTree">
+    <div v-if="!soldLargeTree">
       <div class="tutorial-controls" v-if="tree && tree.Owner === you && !tree.IsDormant && seedSource === null">
         <button v-if="tree.Size >= 1" @click="seed1(selection)" :disabled="seedCost > game.State.Energy[you]">
           Seed (Cost {{seedCost}})
@@ -63,12 +63,17 @@
           Sell (Cost {{growthCost}})
         </button>
       </div>
-      <span v-if="!tree && seedSource !== null">
-        <button @click="seed2(selection)">Seed Here</button>
-      </span>
-      <button @click="endTurn()" v-if="seedSource === null" :disabled="game.State.Day === 1 && game.State.Energy[0] === 3">
-        End Turn
-      </button>
+      <div class="tutorial-controls">
+        <span v-if="!tree && seedSource !== null">
+          <button @click="seed2(selection)">Seed Here</button>
+        </span>
+        <span v-if="seedSource !== null">
+          <button @click="seedSource = null">Cancel Seed</button>
+        </span>
+        <button class="mt-1" @click="endTurn()" v-if="seedSource === null" :disabled="game.State.Day === 1 && game.State.Energy[0] === 3">
+          End Turn
+        </button>
+      </div>
     </div>
   </article>
 </template>
@@ -202,5 +207,9 @@ export default {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
+  gap: 1rem;
+}
+.mt-1 {
+  margin-top: 1rem;
 }
 </style>
