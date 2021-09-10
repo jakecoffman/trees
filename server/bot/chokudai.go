@@ -64,6 +64,9 @@ func Chokudai(first *State, s *Settings) (Action, *State, []*State) {
 					if current.Num[SizeSeed] == 1 && nextAction.Type == Seed {
 						// don't seed when you already have a seed
 						moves = append(moves[:z], moves[z+1:]...)
+					} else if current.Day < 13 && nextAction.Type == Complete {
+						// don't sell before day 13
+						moves = append(moves[:z], moves[z+1:]...)
 					} else if nextAction.Type == Seed && current.Trees[nextAction.SourceCellIdx].Size == SizeSmall {
 						// don't seed from small trees
 						moves = append(moves[:z], moves[z+1:]...)

@@ -49,7 +49,7 @@ func (g *State) Priority(s *Settings) int {
 	if g == nil {
 		return -1
 	}
-	if g.Day >= 24-chokudaiMaxTurns {
+	if g.Day >= 24 {
 		end := g.MyScore + int(math.Floor(float64(g.MySun)))/3
 		// tested: remove pts for wasted energy
 		end -= bits.OnesCount64(g.MyTrees) * 10
@@ -73,6 +73,14 @@ func (g *State) Priority(s *Settings) int {
 
 	// bonus points for shading opponent
 	score += bits.OnesCount64(g.EnemyTrees&g.Larges&g.Shadows[0][SizeLarge]) * 5
+
+	// tested: not good
+	// sub points for being shaded
+	//if s.InDev {
+	//	score -= bits.OnesCount64(g.MyTrees&g.Larges&g.Shadows[0][SizeLarge]) * 5
+	//	score -= bits.OnesCount64(g.MyTrees&g.Mediums&(g.Shadows[0][SizeLarge]|g.Shadows[0][SizeMedium])) * 5
+	//	score -= bits.OnesCount64(g.MyTrees&g.Smalls&(g.Shadows[0][SizeLarge]|g.Shadows[0][SizeMedium]|g.Shadows[0][SizeMedium])) * 5
+	//}
 
 	const (
 		maxLargeTrees  = 4
