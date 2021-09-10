@@ -50,7 +50,10 @@ func (g *State) Priority(s *Settings) int {
 		return -1
 	}
 	if g.Day >= 24-chokudaiMaxTurns {
-		return g.MyScore + int(math.Floor(float64(g.MySun)))/3
+		end := g.MyScore + int(math.Floor(float64(g.MySun)))/3
+		// tested: remove pts for wasted energy
+		end -= bits.OnesCount64(g.MyTrees) * 10
+		return end
 	}
 
 	var score int
