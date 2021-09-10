@@ -1,20 +1,22 @@
 <template>
   <header v-if="game">
     <div class="score-mini">
-      <div class="orange">
-        {{ you === 0 ? 'You' : 'Opponent' }} Score: {{game.State.Score[0]}} ☀️{{ game.State.Energy[0] }}
-      </div>
-      <div class="blue">
-        {{ you === 1 ? 'You' : 'Opponent' }} Score: {{game.State.Score[1]}} ☀️{{ game.State.Energy[1] }}
-      </div>
+      <score-board :you="you" :score="game.State.Score[you]" :energy="game.State.Energy[you]"/>
+      <score-board :you="you" :score="game.State.Score[you]" :energy="game.State.Energy[you]"/>
     </div>
     <div class="score">
       <fieldset class="orange">
         <legend>{{ you === 0 ? 'You' : 'Opponent' }}</legend>
-        Score {{ game.State.Score[0] }}
-        <span v-if="!game.Players[0].Connected">(Disconnected)</span>
+        <high-light>
+          <span :key="game.State.Score[0]">Score {{ game.State.Score[0] }}</span>
+        </high-light>
+        <high-light>
+          <span v-if="!game.Players[0].Connected">(Disconnected)</span>
+        </high-light>
         <br/>
-        ☀️{{ game.State.Energy[0] }}
+        <high-light>
+          <span :key="game.State.Energy[0]">☀️{{ game.State.Energy[0] }}</span>
+        </high-light>
       </fieldset>
 
       <fieldset class="blue">
@@ -23,24 +25,37 @@
           Waiting
         </div>
         <div v-else>
-          Score {{ game.State.Score[1] }}
-          <span v-if="!game.Players[1].Connected">(Disconnected)</span>
+          <high-light>
+            <span :key="game.State.Score[1]">Score {{ game.State.Score[1] }}</span>
+          </high-light>
+          <high-light>
+            <span v-if="!game.Players[1].Connected">(Disconnected)</span>
+          </high-light>
           <br/>
-          ☀️{{ game.State.Energy[1] }}
+          <high-light>
+            <span :key="game.State.Energy[1]">☀️{{ game.State.Energy[1] }}</span>
+          </high-light>
         </div>
       </fieldset>
     </div>
 
     <div class="infos">
-      <span>Day {{game.State.Day}}</span>
-      <span>Nutrients {{game.State.Nutrients}}</span>
+      <high-light>
+        <span :key="game.State.Day">Day {{game.State.Day}}</span>
+      </high-light>
+      <high-light>
+        <span :key="game.State.Nutrients">Nutrients {{game.State.Nutrients}}</span>
+      </high-light>
       <span>Room {{game.Code}}</span>
     </div>
 
   </header>
 </template>
 <script>
+import ScoreBoard from "./ScoreBoard.vue";
+import HighLight from "./HighLight.vue";
 export default {
+  components: {HighLight, ScoreBoard},
   props: ['game', 'conn', 'you']
 }
 </script>
