@@ -78,9 +78,10 @@ func (b *Board) GetNeighborIds(coord Coord) []int8 {
 		cell, ok := b.Map[coord.Neighbor(i, 1)]
 		if ok {
 			orderedNeighborIds = append(orderedNeighborIds, cell.Index)
-		} else {
+		} /* else {
+		// removed, not useful
 			orderedNeighborIds = append(orderedNeighborIds, -1)
-		}
+		}*/
 	}
 	return orderedNeighborIds
 }

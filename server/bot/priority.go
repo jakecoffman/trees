@@ -66,6 +66,14 @@ func (g *State) Priority(s *Settings) int {
 
 	//score += int(g.MySun)
 
+	if g.GeneratedByAction.Type == Seed {
+		for _, n := range g.Board.Cells[g.GeneratedByAction.TargetCellIdx].Neighbors {
+			if g.Trees[n].Exists && g.Trees[n].IsMine {
+				return -1
+			}
+		}
+	}
+
 	// bonus points for never being shaded
 	//score += bits.OnesCount64(g.MyTrees & g.Larges & ^g.MaxShadows) * 5
 	//score += bits.OnesCount64(g.MyTrees & g.Mediums & ^g.MaxShadows) * 3
@@ -97,9 +105,9 @@ func (g *State) Priority(s *Settings) int {
 		score -= (int(g.Num[SizeSmall]) - maxSmallTrees) * 5
 	}
 
-	score += g.MyScore * 100
+	score += g.MyScore * 10
 
-	if g.Num[SizeSeed] == 0 {
+	if g.Num[SizeSeed] == 0 && (g.Num[SizeMedium] > 0 || g.Num[SizeLarge] > 0) {
 		score -= 100
 	}
 

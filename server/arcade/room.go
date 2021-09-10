@@ -265,18 +265,15 @@ func (r *Room) execute(moves [2]*game.Action) ([2]*game.Action, bool) {
 		moves[0] = nil
 		moves[1] = nil
 		r.sendAll(PlayerMessage{Kind: "unlock"})
-		log.Println("BOTH WERE WAIT")
 	} else {
 		// otherwise unlock them if they did not wait, so the waiter keeps waiting
 		if moves[0].Type != game.Wait {
 			moves[0] = nil
 			r.Players[0].Unlock()
-			log.Println("P1 WAIT")
 		}
 		if moves[1].Type != game.Wait {
 			moves[1] = nil
 			r.Players[1].Unlock()
-			log.Println("P2 WAIT")
 		}
 	}
 	// update everyone

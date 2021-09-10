@@ -64,11 +64,14 @@ func Chokudai(first *State, s *Settings) (Action, *State, []*State) {
 					if current.Num[SizeSeed] == 1 && nextAction.Type == Seed {
 						// don't seed when you already have a seed
 						moves = append(moves[:z], moves[z+1:]...)
-					} else if current.Day < 13 && nextAction.Type == Complete {
+					} else if current.Day < 11 && nextAction.Type == Complete {
 						// don't sell before day 13
 						moves = append(moves[:z], moves[z+1:]...)
 					} else if nextAction.Type == Seed && current.Trees[nextAction.SourceCellIdx].Size == SizeSmall {
 						// don't seed from small trees
+						moves = append(moves[:z], moves[z+1:]...)
+					} else if nextAction.Type == Seed && 1 == abs(current.Board.Coords[nextAction.TargetCellIdx].DistanceTo(current.Board.Coords[nextAction.SourceCellIdx])) {
+						// don't seed 1 space away
 						moves = append(moves[:z], moves[z+1:]...)
 					} else {
 						z++
@@ -90,6 +93,10 @@ func Chokudai(first *State, s *Settings) (Action, *State, []*State) {
 					nextState.GeneratedByAction = nextAction
 					nextState.CameFrom = current.State
 					p := nextState.Priority(s)
+					if p == -1 {
+						// don't seed next to another one of your own trees
+						continue
+					}
 					heap.Push(&queues[t+1], &Item{State: nextState, Priority: p})
 					if t+1 < chokudaiMaxTurns {
 						processed++
@@ -120,6 +127,10 @@ func Chokudai(first *State, s *Settings) (Action, *State, []*State) {
 	//log.Println("WIDEST", width)
 	//log.Println("MOVES CONSIDERED", considered)
 
+	if queues[chokudaiMaxTurns].Len() == 0 {
+		log.Println("Couldn't find a move worth doing, sad!")
+		return Action{Type: Wait}, nil, nil
+	}
 	best := heap.Pop(&queues[chokudaiMaxTurns]).(*Item)
 
 	//log.Printf("Best state is (%v): %v\n", best.Priority, best)
