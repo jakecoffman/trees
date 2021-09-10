@@ -12,13 +12,15 @@ pipeline {
             }
         }
         stage('Build UI') {
-        when { changeset "ui/*"}
-            nodejs(nodeJSInstallationName: '13') {
-                sh '''
-                    cd ui
-                    npm ci
-                    npm run build
-                    '''
+            when { changeset "ui/*"}
+            steps {
+                nodejs(nodeJSInstallationName: '13') {
+                    sh '''
+                        cd ui
+                        npm ci
+                        npm run build
+                        '''
+                    }
                 }
             }
         }
