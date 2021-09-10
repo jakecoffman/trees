@@ -23,30 +23,30 @@ pipeline {
                     }
                 }
             }
-        }
-        stage('Deploy Server') {
-            when { changeset "server/*"}
-            steps {
-                sh '''
-scp server/server deploy@stldevs.com:~
-ssh deploy@stldevs.com << EOF
-   sudo service trees stop
-   mv -f ~/server /opt/trees/server
-   cd /opt/trees
-   chmod +x server
-   sudo service trees start
-'''
+            stage('Deploy Server') {
+                when { changeset "server/*"}
+                steps {
+                    sh '''
+    scp server/server deploy@stldevs.com:~
+    ssh deploy@stldevs.com << EOF
+       sudo service trees stop
+       mv -f ~/server /opt/trees/server
+       cd /opt/trees
+       chmod +x server
+       sudo service trees start
+    '''
+                }
             }
-        }
-        stage('Deploy UI') {
-            when { changeset "ui/*"}
-            steps {
-                sh '''
-scp -r ui/dist deploy@stldevs.com:~
-ssh deploy@stldevs.com << EOF
-   rm -rf /opt/trees/dist
-   mv ~/dist /opt/trees
-'''
+            stage('Deploy UI') {
+                when { changeset "ui/*"}
+                steps {
+                    sh '''
+    scp -r ui/dist deploy@stldevs.com:~
+    ssh deploy@stldevs.com << EOF
+       rm -rf /opt/trees/dist
+       mv ~/dist /opt/trees
+    '''
+            }
         }
     }
 }
