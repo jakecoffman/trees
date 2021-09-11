@@ -18,6 +18,7 @@ pipeline {
                     sh '''
                         cd ui
                         npm ci
+                        npm run lint
                         npm run build
                         '''
                     }

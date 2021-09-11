@@ -11,11 +11,6 @@
 <script>
 export default {
   props: ['game', 'index', 'showSize'],
-  data() {
-    return {
-      rotation: this.day * -60
-    }
-  },
   computed: {
     rotation() {
       return this.day * -60
@@ -35,6 +30,7 @@ export default {
         case 3:
           return 5.6
       }
+      return 0
     }
   }
 }

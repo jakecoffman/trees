@@ -1,7 +1,7 @@
 <template>
   <div class="board">
     <div class="row" v-for="row of board" :key="row">
-      <span v-for="item of row">{{item}}</span>
+      <span v-for="(item, index) of row" :key="index">{{item}}</span>
     </div>
   </div>
 </template>

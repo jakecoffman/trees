@@ -1,10 +1,10 @@
 const treeBaseCost = [0, 1, 3, 7]
 const CostLifecycleEnd = 4
-const RichnessBonusMedium = 2
-const RichnessBonusHigh = 4
-const SizeSeed = 0
-const SizeSmall = 1
-const SizeMedium = 2
+// const RichnessBonusMedium = 2
+// const RichnessBonusHigh = 4
+// const SizeSeed = 0
+// const SizeSmall = 1
+// const SizeMedium = 2
 const SizeLarge = 3
 
 // growthCost returns the cost of growing a tree, including the cost of selling it
