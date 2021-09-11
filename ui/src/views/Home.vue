@@ -29,7 +29,7 @@
     </div>
 
     <transition name="slide">
-      <modal v-if="existing">
+      <modal :open="existing">
         <p>You are already in a game.</p>
         <footer class="modal-footer">
           <button @click="quit()">
@@ -87,12 +87,13 @@ export default {
       }
     }
   },
-  async created() {
+  async mounted() {
     const r = await fetch('/api/login', {credentials: 'include'})
     if (!r.ok) {
       return alert("Failed to login")
     }
     const me = await r.json()
+    console.log('here', me)
     this.existing = me.Code
   },
   methods: {

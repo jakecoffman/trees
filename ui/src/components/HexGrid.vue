@@ -47,6 +47,7 @@ export default {
     TheSun,
     HexCell
   },
+  emits: ['select'],
   props: ['game', 'you', 'selection'],
   data() {
     return {
