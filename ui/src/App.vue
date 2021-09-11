@@ -70,4 +70,9 @@ p {
     font-size: 12pt;
   }
 }
+input {
+  font-size: 16pt;
+  text-align: center;
+  line-height: 1.3;
+}
 </style>
