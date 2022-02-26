@@ -25,3 +25,32 @@ jobs:
     - name: Test
       run: go test -v -short ./...
       working-directory: server
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy
+        uses: appleboy/scp-action@master
+        with:
+          host: stldevs.com
+          username: deploy
+          key: ${{ secrets.KEY }}
+          port: 22
+          source: "server/server"
+          target: "~/server"
+
+      - name: Restart
+        uses: appleboy/ssh-action@master
+        with:
+          host: stldevs.com
+          username: deploy
+          key: ${{ secrets.KEY }}
+          port: 22
+          script: |
+            sudo service trees stop
+            mv -f ~/server /opt/trees/server
+            cd /opt/trees
+            chmod +x server
+            sudo service trees start
