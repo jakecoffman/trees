@@ -5,12 +5,8 @@ name: Node.js CI
 
 on:
   push:
-    paths:
-      - 'ui/**'
     branches: [ master ]
   pull_request:
-    paths:
-      - 'ui/**'
     branches: [ master ]
 
 jobs:
@@ -25,3 +21,37 @@ jobs:
         working-directory: ui
       - run: npm run build
         working-directory: ui
+      - uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: ui/dist
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: dist
+          path: dist
+
+      - name: Deploy
+        uses: appleboy/scp-action@master
+        with:
+          host: stldevs.com
+          username: deploy
+          key: ${{ secrets.KEY }}
+          port: 22
+          source: "ui/dist"
+          target: "~/dist"
+
+      - name: Restart
+        uses: appleboy/ssh-action@master
+        with:
+          host: stldevs.com
+          username: deploy
+          key: ${{ secrets.KEY }}
+          port: 22
+          script: |
+            rm -rf /opt/trees/dist
+            mv ~/dist /opt/trees
