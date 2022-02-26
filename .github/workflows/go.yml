@@ -22,6 +22,11 @@ jobs:
       run: go build server.go
       working-directory: server
 
+    - uses: actions/upload-artifact@v2
+      with:
+        name: server
+        path: server/server
+
     - name: Test
       run: go test -v -short ./...
       working-directory: server
@@ -31,6 +36,10 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: server
+
       - name: Deploy
         uses: appleboy/scp-action@master
         with:
