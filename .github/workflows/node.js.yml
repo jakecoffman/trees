@@ -42,7 +42,7 @@ jobs:
           username: deploy
           key: ${{ secrets.KEY }}
           port: 22
-          source: "ui/dist"
+          source: "dist"
           target: "~/dist"
 
       - name: Restart
